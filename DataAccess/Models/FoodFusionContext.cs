@@ -86,13 +86,13 @@ namespace DataAccess.Models
             modelBuilder.Entity<RestaurantEmployee>()
                 .HasOne(restaurantEmployee => restaurantEmployee.Restaurant)
                 .WithMany(restaurant => restaurant.RestaurantEmployee)
-                .HasForeignKey(restaurantEmployee => restaurantEmployee.Restaurant)
+                .HasForeignKey(restaurantEmployee => restaurantEmployee.RestaurantId)
                 .HasPrincipalKey(restaurant => restaurant.Id);
 
             modelBuilder.Entity<RestaurantEmployee>()
                 .HasOne(restaurantEmployee => restaurantEmployee.User)
                 .WithMany(user => user.RestaurantsEmployee)
-                .HasForeignKey(restaurantEmployee => restaurantEmployee.User)
+                .HasForeignKey(restaurantEmployee => restaurantEmployee.UserId)
                 .HasPrincipalKey(user => user.Id);
         }
     }
