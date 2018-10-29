@@ -63,7 +63,8 @@ namespace DataAccess.Models
                 .HasOne(reservedTable => reservedTable.Table)
                 .WithMany(table => table.ReservedTables)
                 .HasForeignKey(reservedTable => reservedTable.RestaurantTableId)
-                .HasPrincipalKey(table => table.Id);
+                .HasPrincipalKey(table => table.Id)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ReservedTable>()
                 .HasOne(reservedTable => reservedTable.Reservation)
@@ -93,7 +94,8 @@ namespace DataAccess.Models
                 .HasOne(restaurantEmployee => restaurantEmployee.User)
                 .WithMany(user => user.RestaurantsEmployee)
                 .HasForeignKey(restaurantEmployee => restaurantEmployee.UserId)
-                .HasPrincipalKey(user => user.Id);
+                .HasPrincipalKey(user => user.Id)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
