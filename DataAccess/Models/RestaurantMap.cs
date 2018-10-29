@@ -12,6 +12,7 @@ namespace DataAccess.Models
         public int Id { get; set; }
 
 
+        public virtual Restaurant Restaurant { get; set; }
         public virtual ICollection<RestaurantTable> Tables { get; set; }
     }
 }
