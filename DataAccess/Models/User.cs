@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
@@ -22,5 +23,9 @@ namespace DataAccess.Models
 
         [Required]
         public UserRole Role { get; set; }
+
+
+        public virtual ICollection<Restaurant> ManagedRestaurants { get; set; }
+        public virtual ICollection<RestaurantEmployee> RestaurantsEmployee { get; set; }
     }
 }
