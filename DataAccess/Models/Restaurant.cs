@@ -24,6 +24,9 @@ namespace DataAccess.Models
         [Required]
         public int ManagerId { get; set; }
 
+        public double GeoLocationX { get; set; }
+
+        public double GeoLocationY { get; set; }
 
         public virtual User Manager { get; set; }
         public virtual ICollection<RestaurantEmployee> Employees { get; set; }
