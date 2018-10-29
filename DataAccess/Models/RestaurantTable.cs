@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
@@ -20,5 +21,6 @@ namespace DataAccess.Models
 
 
         public virtual RestaurantMap RestaurantMap { get; set; }
+        public virtual ICollection<ReservationTable> ReservationTables { get; set; }
     }
 }
