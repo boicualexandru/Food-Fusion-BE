@@ -43,7 +43,7 @@ namespace FoodFusion
 
             services
                 .AddDbContext<FoodFusionContext>(options =>
-                    options.UseSqlServer(Configuration.GetSection("ConnectionStrings:In9Db").Value)
+                    options.UseSqlServer(Configuration.GetSection("ConnectionStrings:FoodFusionDB").Value)
                         .ConfigureWarnings(warning => warning.Ignore(CoreEventId.IncludeIgnoredWarning)),
                     optionsLifetime: ServiceLifetime.Scoped);
         }
