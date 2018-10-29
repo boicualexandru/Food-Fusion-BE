@@ -28,6 +28,7 @@ namespace DataAccess.Models
         public DateTime EndTime { get; set; }
 
 
-        public virtual ICollection<ReservationTable> ReservationTables { get; set; }
+        public virtual Restaurant Restaurant { get; set; }
+        public virtual ICollection<ReservedTable> ReservedTables { get; set; }
     }
 }

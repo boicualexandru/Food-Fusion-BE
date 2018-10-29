@@ -29,13 +29,12 @@ namespace DataAccess.Models
 
         public int RestaurantMapId { get; set; }
 
-        public double GeoLocationX { get; set; }
-
-        public double GeoLocationY { get; set; }
+        public string City { get; set; }
 
         public virtual User Manager { get; set; }
         public virtual Menu Menu { get; set; }
         public virtual RestaurantMap Map { get; set; }
-        public virtual ICollection<RestaurantEmployee> Employees { get; set; }
+        public virtual ICollection<RestaurantEmployee> RestaurantEmployee { get; set; }
+        public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }

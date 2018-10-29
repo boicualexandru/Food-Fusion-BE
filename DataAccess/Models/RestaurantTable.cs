@@ -20,7 +20,7 @@ namespace DataAccess.Models
         public int Seats { get; set; }
 
 
-        public virtual RestaurantMap RestaurantMap { get; set; }
-        public virtual ICollection<ReservationTable> ReservationTables { get; set; }
+        public virtual RestaurantMap Map { get; set; }
+        public virtual ICollection<ReservedTable> ReservedTables { get; set; }
     }
 }

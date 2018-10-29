@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
 {
+    /// <summary>
+    /// Joining Entity between Restaurants and employed Users
+    /// </summary>
     public class RestaurantEmployee
     {
         [Key]

@@ -3,7 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
 {
-    public class ReservationTable
+    /// <summary>
+    /// Joining Entity between Reservation and RestaurantTable
+    /// </summary>
+    public class ReservedTable
     {
         [Key]
         [Required]
@@ -18,6 +21,6 @@ namespace DataAccess.Models
 
 
         public virtual Reservation Reservation { get; set; }
-        public virtual RestaurantTable RestaurantTable { get; set; }
+        public virtual RestaurantTable Table { get; set; }
     }
 }
