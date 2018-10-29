@@ -58,6 +58,13 @@ namespace DataAccess.Models
                 .WithOne(restaurant => restaurant.Map)
                 .HasForeignKey<Restaurant>(restaurant => restaurant.RestaurantMapId)
                 .HasPrincipalKey<RestaurantMap>(map => map.Id);
+
+
+            modelBuilder.Entity<ReservationTable>()
+                .HasOne(reservationTable => reservationTable.RestaurantTable)
+                .WithMany(table => table.ReservationTables)
+                .HasForeignKey(reservationTable => reservationTable.RestaurantTableId)
+                .HasPrincipalKey(table => table.Id);
         }
     }
 }
