@@ -7,13 +7,6 @@ namespace Services.Authentication
 {
     public class Hasher : IHasher
     {
-        private readonly RandomNumberGenerator _randomNumberGenerator;
-
-        public Hasher(RandomNumberGenerator randomNumberGenerator)
-        {
-            _randomNumberGenerator = randomNumberGenerator;
-        }
-
         public string GetHash(string plainText)
         {
             if (plainText == null)
@@ -54,7 +47,7 @@ namespace Services.Authentication
 
             // Produce a version 2 (see comment above) text hash.
             byte[] salt = new byte[SaltSize];
-            _randomNumberGenerator.GetBytes(salt);
+            RandomNumberGenerator.Create().GetBytes(salt);
             byte[] subkey = KeyDerivation.Pbkdf2(plainText, salt, Pbkdf2Prf, Pbkdf2IterCount, Pbkdf2SubkeyLength);
 
             var outputBytes = new byte[1 + SaltSize + Pbkdf2SubkeyLength];
