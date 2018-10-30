@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Services.Authentication;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace FoodFusion
@@ -63,7 +64,9 @@ namespace FoodFusion
                 options.TokenValidationParameters.ValidateLifetime = true;
                 options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
             });
-
+            
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IHasher, Hasher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
