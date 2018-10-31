@@ -67,11 +67,19 @@ namespace FoodFusion
             }).AddJwtBearer(options =>
             {
                 var jwtKeyString = Configuration.GetSection("Jwt:SymetricSecurityKey").Value;
-                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKeyString));
-                options.TokenValidationParameters.IssuerSigningKey = symmetricSecurityKey;
-                
-                options.TokenValidationParameters.ValidateLifetime = true;
-                options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKeyString));
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = symmetricSecurityKey,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true
+                };
+
+                options.RequireHttpsMetadata = false;
+                //options.SaveToken = true;
             });
             
             services.AddTransient<IAuthenticationService, AuthenticationService>();
@@ -102,6 +110,8 @@ namespace FoodFusion
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());
+
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseMvc();
