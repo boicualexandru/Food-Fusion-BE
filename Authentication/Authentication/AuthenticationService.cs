@@ -26,13 +26,21 @@ namespace Services.Authentication
 
         public string GetToken(LoginModel loginModel)
         {
-            var user = GetUserByLoginModel(loginModel);
-            var token = GetTokenByUser(user);
+            var user = GetUser(loginModel);
+            var token = GetToken(user);
 
             return token;
         }
 
-        private User GetUserByLoginModel(LoginModel loginModel)
+        public string RegisterAndGetToken(RegisterModel registerModel)
+        {
+            var user = RegisterAndGetUser(registerModel);
+            var token = GetToken(user);
+
+            return token;
+        }
+
+        private User GetUser(LoginModel loginModel)
         {
             var user = _dbContext.Users.First(u =>
                 string.Equals(u.Email.Trim(), loginModel.Email.Trim(), StringComparison.InvariantCultureIgnoreCase));
@@ -46,7 +54,23 @@ namespace Services.Authentication
             return user;
         }
 
-        private string GetTokenByUser(User user)
+        private User RegisterAndGetUser(RegisterModel registerModel)
+        {
+            var user = new User
+            {
+                Email = registerModel.Email.Trim().ToLower(),
+                FullName = registerModel.FullName.Trim(),
+                HashPassword = _hasher.GetHash(registerModel.Password),
+                Role = UserRole.Client
+            };
+
+            _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
+
+            return user;
+        }
+
+        private string GetToken(User user)
         {
             var claims = new Claim[]
             {
