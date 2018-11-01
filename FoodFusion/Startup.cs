@@ -52,6 +52,12 @@ namespace FoodFusion
             
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator",
+                    policy => policy.RequireClaim(CustomDefinedClaimNames.Role, new List<string>{ UserRole.Administrator.ToString() }));
+            });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services

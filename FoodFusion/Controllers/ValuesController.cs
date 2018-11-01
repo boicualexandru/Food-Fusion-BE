@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodFusion.Controllers
@@ -18,6 +19,7 @@ namespace FoodFusion.Controllers
         }
 
         // GET api/values/5
+        [Authorize(Policy = "Administrator")]
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
