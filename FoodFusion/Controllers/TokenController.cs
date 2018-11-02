@@ -6,6 +6,9 @@ using IAuthenticationService = Services.Authentication.IAuthenticationService;
 
 namespace WebApi.Controllers
 {
+    /// <summary>
+    /// Authentication and Registration functionality
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class TokenController : ControllerBase
@@ -46,12 +49,12 @@ namespace WebApi.Controllers
         }
 
         /// <summary>
-        /// Login functionality
+        /// Register functionality
         /// </summary>
         /// <param name="registerModel"></param>
-        /// <returns>The newly created JWT Token</returns>
-        /// <response code="200">Returns the newly created JWT Token</response>
-        /// <response code="400">The credentials are not valid</response> 
+        /// <returns>The the JWT Token for newly created User</returns>
+        /// <response code="200">Returns the JWT Token</response>
+        /// <response code="400">The Register Model is not valid</response> 
         [HttpPost("register")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
