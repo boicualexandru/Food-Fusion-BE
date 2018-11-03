@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Services.Authentication;
 using IAuthenticationService = Services.Authentication.IAuthenticationService;
 
@@ -30,6 +31,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ModelStateDictionary), StatusCodes.Status400BadRequest)]
         public IActionResult Post([FromBody] LoginModel loginModel)
         {
             if (!ModelState.IsValid)
@@ -58,6 +60,7 @@ namespace WebApi.Controllers
         [HttpPost("register")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ModelStateDictionary), StatusCodes.Status400BadRequest)]
         public IActionResult Register([FromBody] RegisterModel registerModel)
         {
             if (!ModelState.IsValid)
