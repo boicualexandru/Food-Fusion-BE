@@ -98,7 +98,7 @@ namespace FoodFusion
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<FoodFusionContext>();
-                context.Database.EnsureCreated();
+                context.Database.Migrate();
             }
             
             if (env.IsDevelopment())

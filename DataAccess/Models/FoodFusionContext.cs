@@ -35,6 +35,10 @@ namespace DataAccess.Models
         {
             modelBuilder.HasDefaultSchema("dbo");
 
+            modelBuilder.Entity<User>()
+                .HasIndex(user => user.Email)
+                .IsUnique();
+
             modelBuilder.Entity<MenuItem>()
                 .HasOne(menuItem => menuItem.Menu)
                 .WithMany(menu => menu.Items)
