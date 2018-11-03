@@ -1,15 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Services.Authentication
+namespace Services.Authentication.Models
 {
-    public class RegisterModel
+    public class LoginModel
     {
         [Required]
         public string Email { get; set; }
 
         [Required]
         public string Password { get; set; }
-
-        public string FullName { get; set; }
     }
 }

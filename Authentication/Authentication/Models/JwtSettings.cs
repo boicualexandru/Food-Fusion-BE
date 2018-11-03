@@ -1,4 +1,4 @@
-﻿namespace Services.Authentication
+﻿namespace Services.Authentication.Models
 {
     public class JwtSettings
     {

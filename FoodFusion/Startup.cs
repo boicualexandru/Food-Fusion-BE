@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Services.Authentication;
+using Services.Authentication.Models;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace FoodFusion

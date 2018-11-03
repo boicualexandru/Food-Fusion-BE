@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Services.Authentication.Exceptions;
+using Services.Authentication.Models;
 
 namespace Services.Authentication
 {

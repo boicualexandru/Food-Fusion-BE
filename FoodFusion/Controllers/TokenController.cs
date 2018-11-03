@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Services.Authentication;
 using Services.Authentication.Exceptions;
+using Services.Authentication.Models;
 using IAuthenticationService = Services.Authentication.IAuthenticationService;
 
 namespace WebApi.Controllers
