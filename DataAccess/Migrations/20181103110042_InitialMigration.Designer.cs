@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(FoodFusionContext))]
-    [Migration("20181029210922_InitialMigration")]
+    [Migration("20181103110042_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -203,6 +203,9 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
@@ -232,7 +235,7 @@ namespace DataAccess.Migrations
                     b.HasOne("DataAccess.Models.RestaurantTable", "Table")
                         .WithMany("ReservedTables")
                         .HasForeignKey("RestaurantTableId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("DataAccess.Models.Restaurant", b =>
@@ -263,7 +266,7 @@ namespace DataAccess.Migrations
                     b.HasOne("DataAccess.Models.User", "User")
                         .WithMany("RestaurantsEmployee")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("DataAccess.Models.RestaurantTable", b =>

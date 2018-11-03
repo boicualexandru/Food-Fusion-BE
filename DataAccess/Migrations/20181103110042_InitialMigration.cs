@@ -192,7 +192,7 @@ namespace DataAccess.Migrations
                         principalSchema: "dbo",
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,7 +221,7 @@ namespace DataAccess.Migrations
                         principalSchema: "dbo",
                         principalTable: "RestaurantTables",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -285,6 +285,13 @@ namespace DataAccess.Migrations
                 schema: "dbo",
                 table: "RestaurantTables",
                 column: "RestaurantMapId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                schema: "dbo",
+                table: "Users",
+                column: "Email",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
