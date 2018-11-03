@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Services.Authentication;
+using Services.Authentication.Exceptions;
 using IAuthenticationService = Services.Authentication.IAuthenticationService;
 
 namespace WebApi.Controllers
@@ -44,9 +45,10 @@ namespace WebApi.Controllers
                 var token = _authenticationService.GetToken(loginModel);
                 return Ok(token);
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException ex) 
+            when (ex is AuthenticationUserNotFoundException || ex is AuthenticationInvalidPasswordException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ResponseMessages.Authentication.CredentialsNotValid);
             }
         }
 
@@ -73,9 +75,14 @@ namespace WebApi.Controllers
                 var token = _authenticationService.RegisterAndGetToken(registerModel);
                 return Ok(token);
             }
-            catch (Exception ex)
+            catch (AuthenticationEmailAlreadyExistsException)
             {
-                return BadRequest(ex.Message);
+                var invalidModelState = new ModelStateDictionary();
+                invalidModelState.AddModelError(
+                    nameof(RegisterModel.Email), 
+                    ResponseMessages.Authentication.EmailAlreadyExists);
+
+                return BadRequest(invalidModelState);
             }
         }
     }

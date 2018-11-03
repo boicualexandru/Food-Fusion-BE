@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Services.Authentication.Exceptions;
 
 namespace Services.Authentication
 {
@@ -42,13 +45,15 @@ namespace Services.Authentication
 
         private User GetUser(LoginModel loginModel)
         {
-            var user = _dbContext.Users.First(u =>
+            var user = _dbContext.Users.FirstOrDefault(u =>
                 string.Equals(u.Email.Trim(), loginModel.Email.Trim(), StringComparison.InvariantCultureIgnoreCase));
+            user = user ?? throw new AuthenticationUserNotFoundException();
+
 
             var isLoginModelValid = _hasher.VerifyHashedText(user.HashPassword, loginModel.Password);
             if (!isLoginModelValid)
             {
-                throw new InvalidOperationException("Invalid LoginModel");
+                throw new AuthenticationInvalidPasswordException();
             }
 
             return user;
@@ -65,7 +70,25 @@ namespace Services.Authentication
             };
 
             _dbContext.Users.Add(user);
-            _dbContext.SaveChanges();
+
+            try
+            {
+                _dbContext.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                if (!(ex?.InnerException is SqlException innerEx)) throw;
+
+                // SqlServerViolationOfUniqueIndex 2601
+                // SqlServerViolationOfUniqueConstraint 2627
+                if (innerEx.Number == 2601 ||
+                    innerEx.Number == 2627)
+                {
+                    throw new AuthenticationEmailAlreadyExistsException();
+                }
+
+                throw;
+            }
 
             return user;
         }
