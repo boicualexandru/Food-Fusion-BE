@@ -19,7 +19,7 @@ namespace FoodFusion.Controllers
         }
 
         // GET api/values/5
-        [Authorize(Policy = "Administrator")]
+        [Authorize]
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {

@@ -21,6 +21,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Services.Authentication;
 using Services.Authentication.Models;
+using Services.Restaurants;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace FoodFusion
@@ -53,11 +54,7 @@ namespace FoodFusion
             
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Administrator",
-                    policy => policy.RequireClaim(CustomDefinedClaimNames.Role, new List<string>{ UserRole.Administrator.ToString() }));
-            });
+            services.AddAuthorization();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -90,6 +87,7 @@ namespace FoodFusion
             });
             
             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IRestaurantService, RestaurantService>();
             services.AddTransient<IHasher, Hasher>();
         }
 
