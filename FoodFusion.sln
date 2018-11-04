@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "FoodFusion\WebApi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{C04F80A9-5310-47FE-ACB0-636C67668975}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Authentication\Services.csproj", "{E046ED36-99AE-43B7-AFEE-82F74092F55A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{E046ED36-99AE-43B7-AFEE-82F74092F55A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{380CEB33-23D1-42EB-ACAF-F71BA7C10359}"
 EndProject
