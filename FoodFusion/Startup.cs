@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -88,6 +89,7 @@ namespace FoodFusion
             
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IRestaurantService, RestaurantService>();
+            services.AddScoped<IAuthorizationHandler, RestaurantAuthorizationHandler>();
             services.AddTransient<IHasher, Hasher>();
         }
 

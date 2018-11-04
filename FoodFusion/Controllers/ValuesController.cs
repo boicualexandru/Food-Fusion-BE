@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.Authorization;
+using Services.Restaurants;
 
 namespace FoodFusion.Controllers
 {
@@ -11,6 +10,13 @@ namespace FoodFusion.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly IAuthorizationService _authorizationService;
+
+        public ValuesController(IAuthorizationService authorizationService)
+        {
+            _authorizationService = authorizationService;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -23,6 +29,10 @@ namespace FoodFusion.Controllers
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
+            var authorized = _authorizationService.AuthorizeAsync(
+                    User, 4, Operations<RestaurantAuthorizationRequirement>.Create)
+                .Result;
+
             return "value";
         }
 
