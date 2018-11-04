@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using AutoMapper;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
+using Services.Menus.Exceptions;
 using Services.Menus.Models;
+using Services.Restaurants.Exceptions;
 
 namespace Services.Menus
 {
@@ -18,24 +22,70 @@ namespace Services.Menus
             _mapper = mapper;
         }
 
-        public MenuModel ReplaceMenu(int restaurantId, MenuModel menuModel)
+        public MenuModel AddMenuIfNotExists(int restaurantId, MenuModel menuModel)
         {
-            throw new NotImplementedException();
+            var menu = _mapper.Map<Menu>(menuModel);
+            using (var transaction = _dbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    _dbContext.Menus.Add(menu);
+                    _dbContext.SaveChanges();
+
+                    var restaurant = _dbContext.Restaurants
+                        .FirstOrDefault(r => r.Id == restaurantId);
+                    restaurant = restaurant ?? throw new RestaurantNotFoundException();
+
+                    restaurant.MenuId = menu.Id;
+                    _dbContext.SaveChanges();
+
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+            return _mapper.Map<MenuModel>(menu);
         }
 
         public MenuModel GetMenu(int restaurantId)
         {
-            throw new NotImplementedException();
+            var restaurant = _dbContext.Restaurants
+                .Include(r => r.Menu)
+                .FirstOrDefault(r => r.Id == restaurantId);
+            restaurant = restaurant ?? throw new RestaurantNotFoundException();
+
+            var menu = restaurant.Menu ?? throw new MenuNotFoundException();
+
+            return _mapper.Map<MenuModel>(menu);
         }
 
         public MenuItemModel AddItem(int restaurantId, MenuItemModel menuItemModel)
         {
-            throw new NotImplementedException();
+            var restaurant = _dbContext.Restaurants
+                .Include(r => r.Menu)
+                .FirstOrDefault(r => r.Id == restaurantId);
+            restaurant = restaurant ?? throw new RestaurantNotFoundException();
+
+            var menu = restaurant.Menu ?? throw new MenuNotFoundException();
+
+            var menuItem = _mapper.Map<MenuItem>(menuItemModel);
+            menu.Items.Add(menuItem);
+
+            _dbContext.SaveChanges();
+
+            return _mapper.Map<MenuItemModel>(menuItem);
         }
 
         public void RemoveItem(int menuItemId)
         {
-            throw new NotImplementedException();
+            var menuItem = new MenuItem { Id = menuItemId };
+            _dbContext.MenuItems.Attach(menuItem);
+            _dbContext.MenuItems.Remove(menuItem);
+
+            _dbContext.SaveChanges();
         }
     }
 }
