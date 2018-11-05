@@ -30,8 +30,8 @@ namespace Services.Restaurants
                 return Task.CompletedTask;
             }
 
-            var isAdministrator = context.User.IsInRole(UserRole.Administrator.ToString());
-            if (isAdministrator)
+            var isAdmin = context.User.IsInRole(UserRole.Admin.ToString());
+            if (isAdmin)
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;
