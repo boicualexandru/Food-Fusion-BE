@@ -98,7 +98,7 @@ namespace Services.Authentication
         {
             var claims = new Claim[]
             {
-                new Claim(CustomDefinedClaimNames.UserId, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(CustomDefinedClaimNames.FullName, user.FullName),
                 new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
