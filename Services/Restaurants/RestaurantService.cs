@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using AutoMapper;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
+using Services.Restaurants.Exceptions;
 using Services.Restaurants.Models;
 
 namespace Services.Restaurants
@@ -26,6 +28,34 @@ namespace Services.Restaurants
             _dbContext.SaveChanges();
 
             return _mapper.Map<RestaurantModel>(restaurant);
+        }
+
+        public RestaurantDetailedModel GetRestaurant(int id)
+        {
+            var restaurant = _dbContext.Restaurants
+                .AsNoTracking()
+                .Include(r => r.Menu)
+                    .ThenInclude(menu => menu.Items)
+                .FirstOrDefault(r => r.Id == id);
+            restaurant = restaurant ?? throw new RestaurantNotFoundException();
+
+            return _mapper.Map<RestaurantDetailedModel>(restaurant);
+        }
+
+        public IList<RestaurantModel> GetRestaurants(string city)
+        {
+            var restaurantsQuery = _dbContext.Restaurants
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(city))
+            {
+                restaurantsQuery = restaurantsQuery
+                    .Where(r => r.City.ToLower() == city.Trim().ToLower());
+            }
+
+            var restaurants = restaurantsQuery.ToList();
+
+            return _mapper.Map<IList<RestaurantModel>>(restaurants);
         }
     }
 }
