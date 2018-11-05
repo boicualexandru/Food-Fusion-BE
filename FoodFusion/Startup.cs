@@ -22,6 +22,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Services.Authentication;
 using Services.Authentication.Models;
+using Services.Authorization;
 using Services.Restaurants;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -51,6 +52,19 @@ namespace FoodFusion
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath, true);
+
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }},
+                };
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+                c.AddSecurityRequirement(security);
             });
             
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
@@ -88,6 +102,7 @@ namespace FoodFusion
             });
             
             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddScoped(typeof(IResourceAuthorizationService<>), typeof(ResourceAuthorizationService<>));
             services.AddTransient<IRestaurantService, RestaurantService>();
             services.AddScoped<IAuthorizationHandler, RestaurantAuthorizationHandler>();
             services.AddTransient<IHasher, Hasher>();

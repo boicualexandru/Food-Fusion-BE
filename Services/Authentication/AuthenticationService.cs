@@ -98,11 +98,12 @@ namespace Services.Authentication
         {
             var claims = new Claim[]
             {
+                new Claim(CustomDefinedClaimNames.UserId, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(CustomDefinedClaimNames.FullName, user.FullName),
                 new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
                 new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddDays(_jwtSettings.DaysBeforeExpiration)).ToUnixTimeSeconds().ToString()),
-                new Claim(CustomDefinedClaimNames.Role, user.Role.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
             };
 
             var token = new JwtSecurityToken(

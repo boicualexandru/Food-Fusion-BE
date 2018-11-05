@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Services.Authorization;
 
 namespace Services.Restaurants
 {
@@ -23,9 +24,17 @@ namespace Services.Restaurants
                                                        RestaurantAuthorizationRequirement requirement,
                                                        int restaurantId = 0)
         {
-            if (restaurantId == 3)
+            if(requirement.Name == Operations<RestaurantAuthorizationRequirement>.Read.Name)
             {
                 context.Succeed(requirement);
+                return Task.CompletedTask;
+            }
+
+            var isAdministrator = context.User.IsInRole(UserRole.Administrator.ToString());
+            if (isAdministrator)
+            {
+                context.Succeed(requirement);
+                return Task.CompletedTask;
             }
 
             //if (context.User.Identity?.Name == resource.Author)
@@ -38,4 +47,5 @@ namespace Services.Restaurants
     }
 
     public class RestaurantAuthorizationRequirement : OperationAuthorizationRequirement { }
+    //public abstract class RestaurantOperations : Operations<RestaurantAuthorizationRequirement> { }
 }
