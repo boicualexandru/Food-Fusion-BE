@@ -1,12 +1,12 @@
 ﻿using DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Services.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Services.Restaurants.Exceptions;
+using System.Security.Claims;
 
 namespace Services.Restaurants
 {
@@ -37,11 +37,38 @@ namespace Services.Restaurants
                 return Task.CompletedTask;
             }
 
-            //if (context.User.Identity?.Name == resource.Author)
-            //{
-            //    context.Succeed(requirement);
-            //}
+            if(requirement.Name != Operations<RestaurantAuthorizationRequirement>.Update.Name)
+            {
+                context.Fail();
+                return Task.CompletedTask;
+            }
 
+            var restaurant = _dbContext.Restaurants
+                .AsNoTracking()
+                .Include(r => r.Manager)
+                .FirstOrDefault(r => r.Id == restaurantId);
+            restaurant = restaurant ?? throw new RestaurantNotFoundException();
+
+            if(restaurant.Manager == null)
+            {
+                context.Fail();
+                return Task.CompletedTask;
+            }
+
+            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(!int.TryParse(userIdClaim, out var userId))
+            {
+                context.Fail();
+                return Task.CompletedTask;
+            }
+
+            if(userId != restaurant.Manager.Id)
+            {
+                context.Fail();
+                return Task.CompletedTask;
+            }
+
+            context.Succeed(requirement);
             return Task.CompletedTask;
         }
     }
