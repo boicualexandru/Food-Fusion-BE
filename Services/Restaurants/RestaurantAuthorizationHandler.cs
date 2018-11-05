@@ -10,6 +10,12 @@ using System.Security.Claims;
 
 namespace Services.Restaurants
 {
+    /// <summary>
+    /// Authorizations:
+    /// Read            - All Users
+    /// Create, Delete  - Admin
+    /// Update          - Manager
+    /// </summary>
     public class RestaurantAuthorizationHandler :
     AuthorizationHandler<RestaurantAuthorizationRequirement, int>
     {
