@@ -10,6 +10,9 @@ namespace Services.Restaurants.Mappers
         {
             CreateMap<Restaurant, RestaurantModel>();
             CreateMap<RestaurantModel, Restaurant>();
+            
+            CreateMap<Restaurant, RestaurantDetailedModel>();
+            CreateMap<RestaurantDetailedModel, Restaurant>();
         }
     }
 }
