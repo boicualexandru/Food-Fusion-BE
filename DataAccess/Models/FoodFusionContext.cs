@@ -39,49 +39,12 @@ namespace DataAccess.Models
                 .HasIndex(user => user.Email)
                 .IsUnique();
 
-            modelBuilder.Entity<MenuItem>()
-                .HasOne(menuItem => menuItem.Menu)
-                .WithMany(menu => menu.Items)
-                .HasForeignKey(menuItem => menuItem.MenuId)
-                .HasPrincipalKey(menu => menu.Id);
-            
-            modelBuilder.Entity<RestaurantTable>()
-                .HasOne(table => table.Map)
-                .WithMany(map => map.Tables)
-                .HasForeignKey(table => table.RestaurantMapId)
-                .HasPrincipalKey(map => map.Id);
-
             modelBuilder.Entity<ReservedTable>()
                 .HasOne(reservedTable => reservedTable.Table)
                 .WithMany(table => table.ReservedTables)
                 .HasForeignKey(reservedTable => reservedTable.RestaurantTableId)
                 .HasPrincipalKey(table => table.Id)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<ReservedTable>()
-                .HasOne(reservedTable => reservedTable.Reservation)
-                .WithMany(reservation => reservation.ReservedTables)
-                .HasForeignKey(reservedTable => reservedTable.ReservationId)
-                .HasPrincipalKey(reservation => reservation.Id);
-
-            modelBuilder.Entity<Reservation>()
-                .HasOne(reservation => reservation.Restaurant)
-                .WithMany(restaurant => restaurant.Reservations)
-                .HasForeignKey(reservation => reservation.RestaurantId)
-                .HasPrincipalKey(restaurant => restaurant.Id);
-
-            modelBuilder.Entity<Restaurant>()
-                .HasOne(restaurant => restaurant.Manager)
-                .WithMany(manager => manager.ManagedRestaurants)
-                .HasForeignKey(restaurant => restaurant.ManagerId)
-                .HasPrincipalKey(manager => manager.Id);
-
-            modelBuilder.Entity<RestaurantEmployee>()
-                .HasOne(restaurantEmployee => restaurantEmployee.Restaurant)
-                .WithMany(restaurant => restaurant.RestaurantEmployee)
-                .HasForeignKey(restaurantEmployee => restaurantEmployee.RestaurantId)
-                .HasPrincipalKey(restaurant => restaurant.Id);
-
             modelBuilder.Entity<RestaurantEmployee>()
                 .HasOne(restaurantEmployee => restaurantEmployee.User)
                 .WithMany(user => user.RestaurantsEmployee)
