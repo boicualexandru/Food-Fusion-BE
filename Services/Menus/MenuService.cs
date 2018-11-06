@@ -22,29 +22,23 @@ namespace Services.Menus
             _mapper = mapper;
         }
 
-        public MenuModel AddMenuIfNotExists(int restaurantId, MenuModel menuModel)
+        public MenuModel AddMenuIfNotExists(MenuModel menuModel)
         {
             var menu = _mapper.Map<Menu>(menuModel);
-            using (var transaction = _dbContext.Database.BeginTransaction())
+
+            try
             {
-                try
-                {
-                    _dbContext.Menus.Add(menu);
-                    _dbContext.SaveChanges();
+                // TODO: replace restaurant checking with FK violation exception
+                var restaurant = _dbContext.Restaurants
+                    .FirstOrDefault(r => r.Id == menuModel.RestaurantId);
+                restaurant = restaurant ?? throw new RestaurantNotFoundException();
 
-                    var restaurant = _dbContext.Restaurants
-                        .FirstOrDefault(r => r.Id == restaurantId);
-                    restaurant = restaurant ?? throw new RestaurantNotFoundException();
-
-                    restaurant.MenuId = menu.Id;
-                    _dbContext.SaveChanges();
-
-                    transaction.Commit();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                _dbContext.Menus.Add(menu);
+                _dbContext.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
             }
 
             return _mapper.Map<MenuModel>(menu);

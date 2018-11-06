@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Authorization;
 using Services.Restaurants;
 using Services.Restaurants.Exceptions;
 using Services.Restaurants.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebApi.Controllers
 {
@@ -52,7 +47,7 @@ namespace WebApi.Controllers
         }
 
         // POST: api/Restaurants
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Post([FromBody] RestaurantModel restaurant)
         {
@@ -61,9 +56,9 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            _restaurantService.AddRestaurant(restaurant);
+            var createdRestaurant = _restaurantService.AddRestaurant(restaurant);
 
-            return Ok();
+            return Ok(createdRestaurant);
         }
 
         // PUT: api/Restaurants/5
@@ -83,15 +78,32 @@ namespace WebApi.Controllers
                 .IsAuthorized();
             if (!isAuthorized) return Forbid();
 
-            throw new NotImplementedException();
+            try
+            {
+                restaurant.Id = id;
+                _restaurantService.UpdateRestaurant(restaurant);
+                return Ok(restaurant);
+            }
+            catch (RestaurantNotFoundException)
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE: api/Restaurants/5
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _restaurantService.DeleteRestaurant(id);
+                return Ok();
+            }
+            catch (RestaurantNotFoundException)
+            {
+                return BadRequest();
+            }
         }
     }
 }

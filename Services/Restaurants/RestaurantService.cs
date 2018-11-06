@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using DataAccess.Models;
@@ -52,10 +51,37 @@ namespace Services.Restaurants
                 restaurantsQuery = restaurantsQuery
                     .Where(r => r.City.ToLower() == city.Trim().ToLower());
             }
-
+            
             var restaurants = restaurantsQuery.ToList();
 
             return _mapper.Map<IList<RestaurantModel>>(restaurants);
+        }
+
+        public void UpdateRestaurant(RestaurantModel restaurantModel)
+        {
+            // TODO: remove this?
+            var restaurant = _dbContext.Restaurants
+                .FirstOrDefault(r => r.Id == restaurantModel.Id);
+            restaurant = restaurant ?? throw new RestaurantNotFoundException();
+
+            restaurant = _mapper.Map<Restaurant>(restaurantModel);
+
+            var dbEntry = _dbContext.Restaurants.Update(_mapper.Map<Restaurant>(restaurantModel));
+            _dbContext.SaveChanges();
+
+            return;
+        }
+
+        public void DeleteRestaurant(int id)
+        {
+            var restaurant = _dbContext.Restaurants
+                .FirstOrDefault(r => r.Id == id);
+            restaurant = restaurant ?? throw new RestaurantNotFoundException();
+
+            _dbContext.Restaurants.Remove(restaurant);
+            _dbContext.SaveChanges();
+
+            return;
         }
     }
 }

@@ -5,8 +5,10 @@ namespace Services.Restaurants
 {
     public interface IRestaurantService
     {
-        RestaurantModel AddRestaurant(RestaurantModel restaurantModel);
+        RestaurantModel AddRestaurant(RestaurantModel restaurant);
         IList<RestaurantModel> GetRestaurants(string city);
         RestaurantDetailedModel GetRestaurant(int id);
+        void UpdateRestaurant(RestaurantModel restaurant);
+        void DeleteRestaurant(int id);
     }
 }
