@@ -9,7 +9,8 @@ namespace Services.Menus.Mappers
         public MenuItemProfile()
         {
             CreateMap<MenuItem, MenuItemModel>();
-            CreateMap<MenuItemModel, MenuItem>();
+            CreateMap<MenuItemModel, MenuItem>()
+                .ForMember(menuItem => menuItem.Id, opt => opt.Ignore());
         }
     }
 }
