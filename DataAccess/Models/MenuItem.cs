@@ -6,11 +6,9 @@ namespace DataAccess.Models
     public class MenuItem
     {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        [Required]
+        
         public int MenuId { get; set; }
 
         [Required]

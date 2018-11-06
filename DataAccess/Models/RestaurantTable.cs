@@ -7,11 +7,9 @@ namespace DataAccess.Models
     public class RestaurantTable
     {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        [Required]
+        
         public int RestaurantMapId { get; set; }
 
         [MaxLength(200)]

@@ -9,14 +9,11 @@ namespace DataAccess.Models
     public class RestaurantEmployee
     {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        [Required]
+        
         public int RestaurantId { get; set; }
-
-        [Required]
+        
         public int UserId { get; set; }
 
 

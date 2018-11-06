@@ -7,7 +7,6 @@ namespace DataAccess.Models
     public class Restaurant
     {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 

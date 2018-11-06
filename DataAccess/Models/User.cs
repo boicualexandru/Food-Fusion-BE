@@ -7,7 +7,6 @@ namespace DataAccess.Models
     public class User
     {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
@@ -20,8 +19,7 @@ namespace DataAccess.Models
 
         [MaxLength(100)]
         public string FullName { get; set; }
-
-        [Required]
+        
         public UserRole Role { get; set; }
 
 
