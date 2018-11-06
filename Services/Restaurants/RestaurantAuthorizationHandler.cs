@@ -30,12 +30,14 @@ namespace Services.Restaurants
                                                        RestaurantAuthorizationRequirement requirement,
                                                        int restaurantId = 0)
         {
+            // Grant read for all
             if(requirement.Name == Operations<RestaurantAuthorizationRequirement>.Read.Name)
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;
             }
 
+            // Grant all rights for Admin
             var isAdmin = context.User.IsInRole(UserRole.Admin.ToString());
             if (isAdmin)
             {
@@ -74,6 +76,7 @@ namespace Services.Restaurants
                 return Task.CompletedTask;
             }
 
+            // Grant Update for Restaurant User
             context.Succeed(requirement);
             return Task.CompletedTask;
         }
