@@ -10,6 +10,8 @@ namespace DataAccess.Models
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        
+        public int RestaurantId { get; set; }
 
 
         public virtual Restaurant Restaurant { get; set; }

@@ -25,8 +25,6 @@ namespace DataAccess.Models
         public string City { get; set; }
         
         public int? ManagerId { get; set; }
-        
-        public int? MenuId { get; set; }
 
         public int? RestaurantMapId { get; set; }
 

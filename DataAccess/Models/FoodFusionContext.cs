@@ -44,12 +44,6 @@ namespace DataAccess.Models
                 .WithMany(menu => menu.Items)
                 .HasForeignKey(menuItem => menuItem.MenuId)
                 .HasPrincipalKey(menu => menu.Id);
-
-            modelBuilder.Entity<Menu>()
-                .HasOne(menu => menu.Restaurant)
-                .WithOne(restaurant => restaurant.Menu)
-                .HasForeignKey<Restaurant>(restaurant => restaurant.MenuId)
-                .HasPrincipalKey<Menu>(menu => menu.Id);
             
             modelBuilder.Entity<RestaurantTable>()
                 .HasOne(table => table.Map)
