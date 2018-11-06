@@ -26,8 +26,6 @@ namespace DataAccess.Models
         
         public int? ManagerId { get; set; }
 
-        public int? RestaurantMapId { get; set; }
-
 
         public virtual User Manager { get; set; }
         public virtual Menu Menu { get; set; }

@@ -11,6 +11,8 @@ namespace DataAccess.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public int RestaurantId { get; set; }
+
 
         public virtual Restaurant Restaurant { get; set; }
         public virtual ICollection<RestaurantTable> Tables { get; set; }
