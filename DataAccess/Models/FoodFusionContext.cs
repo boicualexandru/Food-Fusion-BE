@@ -45,12 +45,6 @@ namespace DataAccess.Models
                 .HasForeignKey(reservedTable => reservedTable.RestaurantTableId)
                 .HasPrincipalKey(table => table.Id)
                 .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<RestaurantEmployee>()
-                .HasOne(restaurantEmployee => restaurantEmployee.User)
-                .WithMany(user => user.RestaurantsEmployee)
-                .HasForeignKey(restaurantEmployee => restaurantEmployee.UserId)
-                .HasPrincipalKey(user => user.Id)
-                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
