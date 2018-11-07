@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using DataAccess.Models;
@@ -49,7 +50,7 @@ namespace Services.Restaurants
             if (!string.IsNullOrWhiteSpace(city))
             {
                 restaurantsQuery = restaurantsQuery
-                    .Where(r => r.City.ToLower() == city.Trim().ToLower());
+                    .Where(r => string.Equals(r.City, city.Trim(), StringComparison.OrdinalIgnoreCase));
             }
             
             var restaurants = restaurantsQuery.ToList();
@@ -59,17 +60,16 @@ namespace Services.Restaurants
 
         public void UpdateRestaurant(RestaurantModel restaurantModel)
         {
-            // TODO: remove this?
-            var restaurant = _dbContext.Restaurants
-                .FirstOrDefault(r => r.Id == restaurantModel.Id);
-            restaurant = restaurant ?? throw new RestaurantNotFoundException();
+            var restaurantExists = _dbContext.Restaurants
+                .Any(r => r.Id == restaurantModel.Id);
+            if (!restaurantExists) throw new RestaurantNotFoundException();
 
-            restaurant = _mapper.Map<Restaurant>(restaurantModel);
+            var restaurant = _mapper.Map<Restaurant>(restaurantModel);
+            restaurant.Id = restaurantModel.Id;
 
-            var dbEntry = _dbContext.Restaurants.Update(_mapper.Map<Restaurant>(restaurantModel));
+            _dbContext.Attach(restaurant);
+            _dbContext.Restaurants.Update(restaurant);
             _dbContext.SaveChanges();
-
-            return;
         }
 
         public void DeleteRestaurant(int id)
