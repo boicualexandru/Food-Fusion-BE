@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -21,6 +22,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Services.Authentication;
 using Services.Authentication.Models;
+using Services.Authorization;
+using Services.Restaurants;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace FoodFusion
@@ -49,15 +52,24 @@ namespace FoodFusion
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath, true);
+
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }},
+                };
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+                c.AddSecurityRequirement(security);
             });
             
             services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Administrator",
-                    policy => policy.RequireClaim(CustomDefinedClaimNames.Role, new List<string>{ UserRole.Administrator.ToString() }));
-            });
+            services.AddAuthorization();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -90,6 +102,9 @@ namespace FoodFusion
             });
             
             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddScoped(typeof(IResourceAuthorizationService<>), typeof(ResourceAuthorizationService<>));
+            services.AddTransient<IRestaurantService, RestaurantService>();
+            services.AddScoped<IAuthorizationHandler, RestaurantAuthorizationHandler>();
             services.AddTransient<IHasher, Hasher>();
         }
 

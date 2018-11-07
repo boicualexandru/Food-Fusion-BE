@@ -4,14 +4,16 @@ using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(FoodFusionContext))]
-    partial class FoodFusionContextModelSnapshot : ModelSnapshot
+    [Migration("20181106194907_RemovedRequiredOnRestaurantForeignKeys")]
+    partial class RemovedRequiredOnRestaurantForeignKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,12 +28,7 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("RestaurantId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RestaurantId")
-                        .IsUnique();
 
                     b.ToTable("Menus");
                 });
@@ -116,13 +113,25 @@ namespace DataAccess.Migrations
 
                     b.Property<int?>("ManagerId");
 
+                    b.Property<int?>("MenuId");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200);
 
+                    b.Property<int?>("RestaurantMapId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ManagerId");
+
+                    b.HasIndex("MenuId")
+                        .IsUnique()
+                        .HasFilter("[MenuId] IS NOT NULL");
+
+                    b.HasIndex("RestaurantMapId")
+                        .IsUnique()
+                        .HasFilter("[RestaurantMapId] IS NOT NULL");
 
                     b.ToTable("Restaurants");
                 });
@@ -152,12 +161,7 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("RestaurantId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RestaurantId")
-                        .IsUnique();
 
                     b.ToTable("RestaurantMaps");
                 });
@@ -208,14 +212,6 @@ namespace DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("DataAccess.Models.Menu", b =>
-                {
-                    b.HasOne("DataAccess.Models.Restaurant", "Restaurant")
-                        .WithOne("Menu")
-                        .HasForeignKey("DataAccess.Models.Menu", "RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("DataAccess.Models.MenuItem", b =>
                 {
                     b.HasOne("DataAccess.Models.Menu", "Menu")
@@ -250,6 +246,14 @@ namespace DataAccess.Migrations
                     b.HasOne("DataAccess.Models.User", "Manager")
                         .WithMany("ManagedRestaurants")
                         .HasForeignKey("ManagerId");
+
+                    b.HasOne("DataAccess.Models.Menu", "Menu")
+                        .WithOne("Restaurant")
+                        .HasForeignKey("DataAccess.Models.Restaurant", "MenuId");
+
+                    b.HasOne("DataAccess.Models.RestaurantMap", "Map")
+                        .WithOne("Restaurant")
+                        .HasForeignKey("DataAccess.Models.Restaurant", "RestaurantMapId");
                 });
 
             modelBuilder.Entity("DataAccess.Models.RestaurantEmployee", b =>
@@ -262,15 +266,7 @@ namespace DataAccess.Migrations
                     b.HasOne("DataAccess.Models.User", "User")
                         .WithMany("RestaurantsEmployee")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("DataAccess.Models.RestaurantMap", b =>
-                {
-                    b.HasOne("DataAccess.Models.Restaurant", "Restaurant")
-                        .WithOne("Map")
-                        .HasForeignKey("DataAccess.Models.RestaurantMap", "RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("DataAccess.Models.RestaurantTable", b =>

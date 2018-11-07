@@ -9,14 +9,11 @@ namespace DataAccess.Models
     public class ReservedTable
     {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        [Required]
+        
         public int ReservationId { get; set; }
-
-        [Required]
+        
         public int RestaurantTableId { get; set; }
 
 

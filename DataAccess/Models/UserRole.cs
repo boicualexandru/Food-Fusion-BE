@@ -2,7 +2,7 @@
 {
     public enum UserRole
     {
-        Administrator = 0,
+        Admin = 0,
         Client = 1
     }
 }

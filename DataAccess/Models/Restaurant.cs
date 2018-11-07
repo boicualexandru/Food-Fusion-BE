@@ -7,7 +7,6 @@ namespace DataAccess.Models
     public class Restaurant
     {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
@@ -21,15 +20,11 @@ namespace DataAccess.Models
         [MaxLength(200)]
         public string Contact { get; set; }
 
-        [Required]
-        public int ManagerId { get; set; }
-        
-        [Required]
-        public int MenuId { get; set; }
-
-        public int RestaurantMapId { get; set; }
-
+        [MaxLength(200)]
         public string City { get; set; }
+        
+        public int? ManagerId { get; set; }
+
 
         public virtual User Manager { get; set; }
         public virtual Menu Menu { get; set; }
