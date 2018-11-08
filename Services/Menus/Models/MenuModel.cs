@@ -6,8 +6,6 @@ namespace Services.Menus.Models
     {
         public int Id { get; set; }
 
-        public int RestaurantId { get; set; }
-
         public List<MenuItemModel> Items { get; set; }
     }
 }
