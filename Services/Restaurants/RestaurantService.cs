@@ -60,15 +60,12 @@ namespace Services.Restaurants
 
         public void UpdateRestaurant(RestaurantModel restaurantModel)
         {
-            var restaurantExists = _dbContext.Restaurants
-                .Any(r => r.Id == restaurantModel.Id);
-            if (!restaurantExists) throw new RestaurantNotFoundException();
+            var restaurant = _dbContext.Restaurants
+                .FirstOrDefault(r => r.Id == restaurantModel.Id);
+            restaurant = restaurant ?? throw new RestaurantNotFoundException();
 
-            var restaurant = _mapper.Map<Restaurant>(restaurantModel);
-            restaurant.Id = restaurantModel.Id;
+            restaurant = _mapper.Map(restaurantModel, restaurant);
 
-            _dbContext.Attach(restaurant);
-            _dbContext.Restaurants.Update(restaurant);
             _dbContext.SaveChanges();
         }
 
