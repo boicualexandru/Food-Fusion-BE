@@ -6,19 +6,19 @@ using Services.Restaurants.Exceptions;
 
 namespace WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Restaurants")]
     [ApiController]
-    public class MenusController : ControllerBase
+    public class MenuController : ControllerBase
     {
         private readonly IMenuService _menuService;
 
-        public MenusController(IMenuService menuService)
+        public MenuController(IMenuService menuService)
         {
             _menuService = menuService;
         }
 
-        // GET: api/Menus
-        [HttpGet("{restaurantId}")]
+        // GET: api/Restaurants/5/Menu
+        [HttpGet("{restaurantId}/[controller]")]
         public IActionResult Get(int restaurantId)
         {
             try
@@ -36,8 +36,8 @@ namespace WebApi.Controllers
             }
         }
 
-        // POST: api/Menus
-        [HttpPost("{restaurantId}")]
+        // POST: api/Restaurants/5/Menu
+        [HttpPost("{restaurantId}/[controller]")]
         public IActionResult Post(int restaurantId, [FromBody] MenuModel menu)
         {
             if (!ModelState.IsValid)
@@ -60,8 +60,8 @@ namespace WebApi.Controllers
             }
         }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{restaurantId}")]
+        // DELETE: api/Restaurants/5/Menu
+        [HttpDelete("{restaurantId}/[controller]")]
         public IActionResult Delete(int restaurantId)
         {
             try
@@ -79,8 +79,8 @@ namespace WebApi.Controllers
             }
         }
 
-        // POST: api/Menus
-        [HttpPost("{menuId}/items")]
+        // POST: api/Restaurants/Menu/5/Items
+        [HttpPost("[controller]/{menuId}/Items")]
         public IActionResult PostItem(int menuId, [FromBody] MenuItemModel item)
         {
             if (!ModelState.IsValid)
@@ -99,8 +99,8 @@ namespace WebApi.Controllers
             }
         }
 
-        // PUT: api/Menus/5
-        [HttpPut("items/{itemId}")]
+        // PUT: api/Restaurants/Menu/Items/5
+        [HttpPut("[controller]/Items/{itemId}")]
         public IActionResult UpdateItem(int itemId, [FromBody] MenuItemModel item)
         {
             if (!ModelState.IsValid)
@@ -120,8 +120,8 @@ namespace WebApi.Controllers
             }
         }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("items/{itemId}")]
+        // DELETE: api/Restaurants/Menu/Items/5
+        [HttpDelete("[controller]/Items/{itemId}")]
         public IActionResult DeleteItem(int itemId)
         {
             try
