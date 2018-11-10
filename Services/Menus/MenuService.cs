@@ -22,8 +22,10 @@ namespace Services.Menus
         public MenuModel AddMenuIfNotExists(int restaurantId, MenuModel menuModel)
         {
             var restaurant = _dbContext.Restaurants
+                .Include(r => r.Menu)
                 .FirstOrDefault(r => r.Id == restaurantId);
             restaurant = restaurant ?? throw new RestaurantNotFoundException();
+            if(restaurant.Menu != null) throw new MenuAlreadyExistsException();
 
             var menu = _mapper.Map<Menu>(menuModel);
             restaurant.Menu = menu;
@@ -46,13 +48,15 @@ namespace Services.Menus
             return _mapper.Map<MenuModel>(menu);
         }
 
-        public void RemoveMenu(int id)
+        public void RemoveMenu(int restaurantId)
         {
-            var menu = _dbContext.Menus
-                .FirstOrDefault(m => m.Id == id);
-            menu = menu ?? throw new MenuNotFoundException();
-
-            _dbContext.Menus.Remove(menu);
+            var restaurant = _dbContext.Restaurants
+                .Include(r => r.Menu)
+                .FirstOrDefault(r => r.Id == restaurantId);
+            restaurant = restaurant ?? throw new RestaurantNotFoundException();
+            restaurant.Menu = restaurant.Menu ?? throw new MenuNotFoundException();
+            
+            _dbContext.Menus.Remove(restaurant.Menu);
             _dbContext.SaveChanges();
         }
 
@@ -63,8 +67,9 @@ namespace Services.Menus
             menu = menu ?? throw new MenuNotFoundException();
 
             var menuItem = _mapper.Map<MenuItem>(menuItemModel);
-            menu.Items.Add(menuItem);
+            menuItem.MenuId = menu.Id;
 
+            _dbContext.MenuItems.Add(menuItem);
             _dbContext.SaveChanges();
             
             return _mapper.Map<MenuItemModel>(menuItem);
@@ -77,6 +82,17 @@ namespace Services.Menus
             menuItem = menuItem ?? throw new MenuItemNotFoundException();
 
             _dbContext.MenuItems.Remove(menuItem);
+            _dbContext.SaveChanges();
+        }
+
+        public void UpdateItem(MenuItemModel menuItemModel)
+        {
+            var menuItem = _dbContext.MenuItems
+                   .FirstOrDefault(r => r.Id == menuItemModel.Id);
+            menuItem = menuItem ?? throw new MenuItemNotFoundException();
+
+            menuItem = _mapper.Map(menuItemModel, menuItem);
+
             _dbContext.SaveChanges();
         }
     }

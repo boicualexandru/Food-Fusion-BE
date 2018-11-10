@@ -23,6 +23,7 @@ using Microsoft.IdentityModel.Tokens;
 using Services.Authentication;
 using Services.Authentication.Models;
 using Services.Authorization;
+using Services.Menus;
 using Services.Restaurants;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -102,10 +103,14 @@ namespace FoodFusion
             });
             
             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IHasher, Hasher>();
             services.AddScoped(typeof(IResourceAuthorizationService<>), typeof(ResourceAuthorizationService<>));
+
             services.AddTransient<IRestaurantService, RestaurantService>();
             services.AddScoped<IAuthorizationHandler, RestaurantAuthorizationHandler>();
-            services.AddTransient<IHasher, Hasher>();
+
+            services.AddTransient<IMenuService, MenuService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

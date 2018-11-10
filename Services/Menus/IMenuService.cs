@@ -7,8 +7,9 @@ namespace Services.Menus
     {
         MenuModel AddMenuIfNotExists(int restaurantId, MenuModel menuModel);
         MenuModel GetMenu(int restaurantId);
-        void RemoveMenu(int id);
-        MenuItemModel AddItem(int menuId, MenuItemModel menuItemModel);
+        void RemoveMenu(int restaurantId);
+        MenuItemModel AddItem(int menuId, MenuItemModel menuItem);
+        void UpdateItem(MenuItemModel menuItem);
         void RemoveItem(int id);
     }
 }
