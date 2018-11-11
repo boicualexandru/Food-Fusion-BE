@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Authorization;
 using Services.Restaurants;
 using Services.Restaurants.Exceptions;
 using Services.Restaurants.Models;
+using System.Collections.Generic;
 
 namespace WebApi.Controllers
 {
+    /// <summary>
+    /// Restaurant oriented operations
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class RestaurantsController : ControllerBase
@@ -23,7 +28,13 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Restaurants
+        /// <summary>
+        /// Returns a list of restaurants filtered by city
+        /// </summary>
+        /// <param name="city">Optiona: City to be filter by</param>
+        /// <returns>List of restaurants</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(IList<RestaurantModel>), StatusCodes.Status200OK)]
         public IActionResult Get(string city)
         {
             var restaurants = _restaurantService.GetRestaurants(city);
