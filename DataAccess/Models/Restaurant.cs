@@ -29,7 +29,7 @@ namespace DataAccess.Models
         public virtual User Manager { get; set; }
         public virtual Menu Menu { get; set; }
         public virtual RestaurantMap Map { get; set; }
-        public virtual ICollection<RestaurantEmployee> RestaurantEmployee { get; set; }
+        public virtual ICollection<RestaurantEmployee> RestaurantEmployees { get; set; }
         public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }
