@@ -7,6 +7,7 @@ using Services.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Services.Restaurants.Exceptions;
 using System.Security.Claims;
+using Services.Authorization.Exceptions;
 
 namespace Services.Restaurants
 {

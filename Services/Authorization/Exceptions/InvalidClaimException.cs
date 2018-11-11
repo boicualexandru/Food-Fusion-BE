@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Services.Restaurants.Exceptions
+namespace Services.Authorization.Exceptions
 {
     public class InvalidClaimException : InvalidOperationException { }
 }
