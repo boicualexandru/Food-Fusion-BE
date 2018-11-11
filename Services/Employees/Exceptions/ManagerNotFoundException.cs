@@ -1,6 +1,6 @@
 ﻿using Common;
 
-namespace Services.Restaurants.Exceptions
+namespace Services.Employees.Exceptions
 {
     public class ManagerNotFoundException : CustomWebException
     {
