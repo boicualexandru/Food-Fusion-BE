@@ -51,32 +51,23 @@ namespace Services.Restaurants
                 return Task.CompletedTask;
             }
 
+            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) throw new InvalidClaimException();
+
             var restaurant = _dbContext.Restaurants
                 .AsNoTracking()
                 .Include(r => r.Manager)
                 .FirstOrDefault(r => r.Id == restaurantId);
             restaurant = restaurant ?? throw new RestaurantNotFoundException();
-
-            if(restaurant.Manager == null)
+            restaurant.Manager = restaurant.Manager ?? throw new ManagerNotFoundException();
+            
+            if (userId != restaurant.Manager.Id)
             {
                 context.Fail();
                 return Task.CompletedTask;
             }
 
-            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if(!int.TryParse(userIdClaim, out var userId))
-            {
-                context.Fail();
-                return Task.CompletedTask;
-            }
-
-            if(userId != restaurant.Manager.Id)
-            {
-                context.Fail();
-                return Task.CompletedTask;
-            }
-
-            // Grant Update for Restaurant User
+            // Grant Update for Restaurant Manager
             context.Succeed(requirement);
             return Task.CompletedTask;
         }
