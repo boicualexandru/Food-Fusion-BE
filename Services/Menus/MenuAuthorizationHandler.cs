@@ -7,32 +7,32 @@ using Services.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Services.Restaurants.Exceptions;
 using System.Security.Claims;
+using Services.Menus.Exceptions;
 using Services.Authorization.Exceptions;
 
-namespace Services.Restaurants
+namespace Services.Menus
 {
     /// <summary>
     /// Authorizations:
-    /// Read            - All Users
-    /// Create, Delete  - Admin
-    /// Update          - Manager
+    /// Read                    - All Users
+    /// Create, Update, Delete  - Manager
     /// </summary>
-    public class RestaurantAuthorizationHandler :
-    AuthorizationHandler<RestaurantAuthorizationRequirement, int>
+    public class MenuAuthorizationHandler :
+    AuthorizationHandler<MenuAuthorizationRequirement, int>
     {
         private readonly FoodFusionContext _dbContext;
 
-        public RestaurantAuthorizationHandler(FoodFusionContext dbContext)
+        public MenuAuthorizationHandler(FoodFusionContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                                       RestaurantAuthorizationRequirement requirement,
-                                                       int restaurantId = 0)
+                                                       MenuAuthorizationRequirement requirement,
+                                                       int menuId = 0)
         {
             // Grant read for all
-            if(requirement.Name == Operations<RestaurantAuthorizationRequirement>.Read.Name)
+            if(requirement.Name == Operations<MenuAuthorizationRequirement>.Read.Name)
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;
@@ -46,34 +46,29 @@ namespace Services.Restaurants
                 return Task.CompletedTask;
             }
 
-            if(requirement.Name != Operations<RestaurantAuthorizationRequirement>.Update.Name)
-            {
-                context.Fail();
-                return Task.CompletedTask;
-            }
-
             var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdClaim, out var userId)) throw new InvalidClaimException();
 
-            var restaurant = _dbContext.Restaurants
+            var menu = _dbContext.Menus
                 .AsNoTracking()
-                .Include(r => r.Manager)
-                .FirstOrDefault(r => r.Id == restaurantId);
-            restaurant = restaurant ?? throw new RestaurantNotFoundException();
-            restaurant.Manager = restaurant.Manager ?? throw new ManagerNotFoundException();
+                .Include(m => m.Restaurant)
+                    .ThenInclude(r => r.Manager)
+                .FirstOrDefault(m => m.Id == menuId);
+            menu = menu ?? throw new MenuNotFoundException();
+            menu.Restaurant = menu.Restaurant ?? throw new RestaurantNotFoundException();
+            menu.Restaurant.Manager = menu.Restaurant.Manager ?? throw new ManagerNotFoundException();
             
-            if (userId != restaurant.Manager.Id)
+            if (userId != menu.Restaurant.Manager.Id)
             {
                 context.Fail();
                 return Task.CompletedTask;
             }
 
-            // Grant Update for Restaurant Manager
+            // Grant All Rights for Restaurant Manager
             context.Succeed(requirement);
             return Task.CompletedTask;
         }
     }
 
-    public class RestaurantAuthorizationRequirement : OperationAuthorizationRequirement { }
-    //public abstract class RestaurantOperations : Operations<RestaurantAuthorizationRequirement> { }
+    public class MenuAuthorizationRequirement : OperationAuthorizationRequirement { }
 }

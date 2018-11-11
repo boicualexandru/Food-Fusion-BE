@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Common;
 
 namespace Services.Restaurants.Exceptions
 {
-    public class RestaurantNotFoundException : InvalidOperationException { }
+    public class RestaurantNotFoundException : CustomWebException
+    {
+        public override string Message => "Restaurant not found.";
+    }
 }

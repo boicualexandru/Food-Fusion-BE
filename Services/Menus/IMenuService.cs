@@ -1,12 +1,15 @@
-﻿using Services.Menus.Models;
+﻿using System;
+using Services.Menus.Models;
 
 namespace Services.Menus
 {
-    interface IMenuService
+    public interface IMenuService
     {
-        MenuModel AddMenuIfNotExists(MenuModel menuModel);
+        MenuModel AddMenuIfNotExists(int restaurantId, MenuModel menuModel);
         MenuModel GetMenu(int restaurantId);
-        MenuItemModel AddItem(int restaurantId, MenuItemModel menuItemModel);
-        void RemoveItem(int menuItemId);
+        void RemoveMenu(int restaurantId);
+        MenuItemModel AddItem(int menuId, MenuItemModel menuItem);
+        void UpdateItem(MenuItemModel menuItem);
+        void RemoveItem(int id);
     }
 }
