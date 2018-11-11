@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Common;
 
 namespace Services.Menus.Exceptions
 {
-    public class MenuAlreadyExistsException : InvalidOperationException { }
+    public class MenuAlreadyExistsException : CustomWebException
+    {
+        public override string Message => "Menu already exists.";
+    }
 }

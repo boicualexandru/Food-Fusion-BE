@@ -26,6 +26,7 @@ using Services.Authorization;
 using Services.Menus;
 using Services.Restaurants;
 using Swashbuckle.AspNetCore.Swagger;
+using WebApi.Middlewares;
 
 namespace FoodFusion
 {
@@ -130,6 +131,7 @@ namespace FoodFusion
             {
                 app.UseHsts();
             }
+            app.UseCustomExceptionMiddleware();
 
             app.UseCors(builder =>
                 builder

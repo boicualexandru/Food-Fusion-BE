@@ -42,7 +42,7 @@ namespace WebApi.Controllers
             }
             catch(RestaurantNotFoundException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -86,7 +86,7 @@ namespace WebApi.Controllers
             }
             catch (RestaurantNotFoundException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -102,7 +102,7 @@ namespace WebApi.Controllers
             }
             catch (RestaurantNotFoundException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
     }
