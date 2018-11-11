@@ -71,15 +71,15 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var isAuthorized = _authorizationService
-                .WithUser(User)
-                .WithRequirement(Operations<RestaurantAuthorizationRequirement>.Update)
-                .WithResource(id)
-                .IsAuthorized();
-            if (!isAuthorized) return Forbid();
-
             try
             {
+                var isAuthorized = _authorizationService
+                   .WithUser(User)
+                   .WithRequirement(Operations<RestaurantAuthorizationRequirement>.Update)
+                   .WithResource(id)
+                   .IsAuthorized();
+                if (!isAuthorized) return Forbid();
+
                 restaurant.Id = id;
                 _restaurantService.UpdateRestaurant(restaurant);
                 return Ok(restaurant);
