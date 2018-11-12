@@ -35,15 +35,15 @@ namespace Services.Employees
             return _mapper.Map<IList<EmployeeModel>>(employees);
         }
 
-        public void AddEmployee(int restaurantId, int userId)
+        public EmployeeModel AddEmployee(int restaurantId, int userId)
         {
             var restaurantExists = _dbContext.Restaurants
                 .Any(r => r.Id == restaurantId);
             if (!restaurantExists) throw new RestaurantNotFoundException();
 
-            var userExists = _dbContext.Users
-                .Any(u => u.Id == userId);
-            if (!userExists) throw new UserNotFoundException();
+            var user = _dbContext.Users
+                .FirstOrDefault(u => u.Id == userId);
+            user = user ?? throw new UserNotFoundException();
 
             var employeExists = _dbContext.RestaurantEmployees
                 .Any(re => re.RestaurantId == restaurantId && re.UserId == userId);
@@ -57,6 +57,8 @@ namespace Services.Employees
 
             _dbContext.RestaurantEmployees.Add(employee);
             _dbContext.SaveChanges();
+
+            return _mapper.Map<EmployeeModel>(user);
         }
 
         public void RemoveEmployee(int restaurantId, int userId)
@@ -80,11 +82,11 @@ namespace Services.Employees
             return _mapper.Map<EmployeeModel>(restaurant.Manager);
         }
 
-        public void AddOrReplaceManager(int restaurantId, int userId)
+        public EmployeeModel AddOrReplaceManager(int restaurantId, int userId)
         {
-            var userExists = _dbContext.Users
-                .Any(u => u.Id == userId);
-            if (!userExists) throw new UserNotFoundException();
+            var user = _dbContext.Users
+                .FirstOrDefault(u => u.Id == userId);
+            user = user ?? throw new UserNotFoundException();
 
             var restaurant = _dbContext.Restaurants
                 .FirstOrDefault(r => r.Id == restaurantId);
@@ -92,6 +94,8 @@ namespace Services.Employees
 
             restaurant.ManagerId = userId;
             _dbContext.SaveChanges();
+
+            return _mapper.Map<EmployeeModel>(user);
         }
     }
 }
