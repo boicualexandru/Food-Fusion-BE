@@ -6,46 +6,77 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Authorization;
 using Services.Employees;
+using Services.Employees.Exceptions;
 
 namespace WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Restaurants/{restaurantId}")]
     [ApiController]
     public class EmployeesController : ControllerBase
     {
         private readonly IResourceAuthorizationService<EmployeeAuthorizationRequirement> _authorizationService;
         private readonly IEmployeesService _employeesService;
 
-        // GET: api/Employees
-        [HttpGet]
-        public IEnumerable<string> Get()
+        public EmployeesController(
+            IResourceAuthorizationService<EmployeeAuthorizationRequirement> authorizationService, 
+            IEmployeesService employeesService)
         {
-            return new string[] { "value1", "value2" };
+            _authorizationService = authorizationService;
+            _employeesService = employeesService;
         }
 
-        // GET: api/Employees/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        // GET: api/Restaurants/5/Employees
+        [HttpGet("Employees")]
+        public IActionResult GetEmployees(int restaurantId)
         {
-            return "value";
+            var employees = _employeesService.GetEmployees(restaurantId);
+            return Ok(employees);
         }
 
-        // POST: api/Employees
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // POST: api/Restaurants/5/Employees
+        [HttpPost("Employees")]
+        public IActionResult PostEmployee(int restaurantId, [FromBody] int userId)
         {
+            var employee = _employeesService.AddEmployee(restaurantId, userId);
+            return Ok(employee);
         }
 
-        // PUT: api/Employees/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // DELETE: api/Restaurants/5/Employees/3
+        [HttpDelete("Employees/{userId}")]
+        public IActionResult DeleteEmployee(int restaurantId, int userId)
         {
+            try
+            {
+                _employeesService.RemoveEmployee(restaurantId, userId);
+                return Ok();
+            }
+            catch (EmployeeNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // GET: api/Restaurants/5/Manager
+        [HttpGet("Manager")]
+        public IActionResult GetManager(int restaurantId)
         {
+            try
+            {
+                var manager = _employeesService.GetManager(restaurantId);
+                return Ok(manager);
+            }
+            catch (ManagerNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        // POST: api/Restaurants/5/Manager
+        [HttpPost("Manager")]
+        public IActionResult PostManager(int restaurantId, [FromBody] int userId)
+        {
+            var manager = _employeesService.AddOrReplaceManager(restaurantId, userId);
+            return Ok(manager);
         }
     }
 }

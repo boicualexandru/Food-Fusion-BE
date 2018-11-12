@@ -11,6 +11,7 @@ using Services.Restaurants.Exceptions;
 
 namespace Services.Employees
 {
+    //TODO: Add it as a sub operation in Restaurant Authorization
     /// <summary>
     /// Authorizations:
     /// Read                    - Employees, Manager
