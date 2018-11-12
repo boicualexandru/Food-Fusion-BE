@@ -2,8 +2,8 @@
 {
     public class EmployeeModel
     {
-        int UserId { get; set; }
-        string FullName { get; set; }
-        // string Tumbnail { get; set; }
+        public int UserId { get; set; }
+        public string FullName { get; set; }
+        // public string Tumbnail { get; set; }
     }
 }

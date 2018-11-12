@@ -8,7 +8,10 @@ namespace Services.Employees.Mappers
     {
         public EmployeeProfile()
         {
-            CreateMap<User, EmployeeModel>();
+            CreateMap<User, EmployeeModel>()
+                .ForMember(
+                    dest => dest.UserId,
+                    opt => opt.MapFrom(source => source.Id));
         }
     }
 }
