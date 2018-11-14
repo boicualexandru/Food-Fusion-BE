@@ -9,6 +9,7 @@ using Services.Restaurants.Exceptions;
 using System.Security.Claims;
 using Services.Menus.Exceptions;
 using Services.Authorization.Exceptions;
+using Services.Employees.Exceptions;
 
 namespace Services.Menus
 {

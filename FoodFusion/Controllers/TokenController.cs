@@ -46,7 +46,7 @@ namespace WebApi.Controllers
                 return Ok(token);
             }
             catch (InvalidOperationException ex) 
-            when (ex is AuthenticationUserNotFoundException || ex is AuthenticationInvalidPasswordException)
+            when (ex is UserNotFoundException || ex is InvalidPasswordException)
             {
                 return BadRequest(ResponseMessages.Authentication.CredentialsNotValid);
             }
@@ -75,7 +75,7 @@ namespace WebApi.Controllers
                 var token = _authenticationService.RegisterAndGetToken(registerModel);
                 return Ok(token);
             }
-            catch (AuthenticationEmailAlreadyExistsException)
+            catch (EmailAlreadyExistsException)
             {
                 var invalidModelState = new ModelStateDictionary();
                 invalidModelState.AddModelError(

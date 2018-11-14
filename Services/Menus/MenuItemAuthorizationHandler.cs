@@ -5,10 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Services.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Services.Restaurants.Exceptions;
 using System.Security.Claims;
 using Services.Menus.Exceptions;
 using Services.Authorization.Exceptions;
+using Services.Employees.Exceptions;
 
 namespace Services.Menus
 {
@@ -53,12 +53,11 @@ namespace Services.Menus
                 .AsNoTracking()
                 .Include(i => i.Menu)
                     .ThenInclude(m => m.Restaurant)
-                        .ThenInclude(r => r.Manager)
                 .FirstOrDefault(i => i.Id == menuItemId);
             menuItem = menuItem ?? throw new MenuItemNotFoundException();
-            menuItem.Menu.Restaurant.Manager = menuItem.Menu.Restaurant.Manager ?? throw new ManagerNotFoundException();
+            menuItem.Menu.Restaurant.ManagerId = menuItem.Menu.Restaurant.ManagerId ?? throw new ManagerNotFoundException();
             
-            if (userId != menuItem.Menu.Restaurant.Manager.Id)
+            if (userId != menuItem.Menu.Restaurant.ManagerId)
             {
                 context.Fail();
                 return Task.CompletedTask;

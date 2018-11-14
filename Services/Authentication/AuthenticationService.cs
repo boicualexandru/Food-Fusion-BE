@@ -48,13 +48,13 @@ namespace Services.Authentication
         {
             var user = _dbContext.Users.FirstOrDefault(u =>
                 string.Equals(u.Email.Trim(), loginModel.Email.Trim(), StringComparison.InvariantCultureIgnoreCase));
-            user = user ?? throw new AuthenticationUserNotFoundException();
+            user = user ?? throw new UserNotFoundException();
 
 
             var isLoginModelValid = _hasher.VerifyHashedText(user.HashPassword, loginModel.Password);
             if (!isLoginModelValid)
             {
-                throw new AuthenticationInvalidPasswordException();
+                throw new InvalidPasswordException();
             }
 
             return user;
@@ -85,7 +85,7 @@ namespace Services.Authentication
                 if (innerEx.Number == 2601 ||
                     innerEx.Number == 2627)
                 {
-                    throw new AuthenticationEmailAlreadyExistsException();
+                    throw new EmailAlreadyExistsException();
                 }
 
                 throw;
