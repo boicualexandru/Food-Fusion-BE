@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Common;
+using Services.Reservations.Models;
 
 namespace Services.Reservations
 {
@@ -7,7 +9,7 @@ namespace Services.Reservations
         // TODO: filter by date and by upcoming/old ones
         IList<ReservationModel> GetUserReservations(int userId);
         IList<ReservationModel> GetRestaurantReservations(int restaurantId);
-        ReservationDetailedModel GetReservation(int sreservationId);
+        ReservationDetailedModel GetReservation(int reservationId);
         IList<TimeRange> GetAvailability(int restaurantId, int participantsCount, TimeRange timeRange);
         // TODO: parameter type should contain only: restaurantId, userId, participantsCount, list of tableIds, timeRange
         // but it might be he same as returned type
