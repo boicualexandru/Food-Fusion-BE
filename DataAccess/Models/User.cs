@@ -25,5 +25,6 @@ namespace DataAccess.Models
 
         public virtual ICollection<Restaurant> ManagedRestaurants { get; set; }
         public virtual ICollection<RestaurantEmployee> RestaurantsEmployee { get; set; }
+        public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }
