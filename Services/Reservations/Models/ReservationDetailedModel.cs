@@ -1,11 +1,12 @@
 ﻿using Common;
+using Common.ConcurrentEvents;
 using Services.Restaurants.Models;
 using Services.Users.Models;
 using System.Collections.Generic;
 
 namespace Services.Reservations.Models
 {
-    public class ReservationDetailedModel
+    public class ReservationDetailedModel : IEvent
     {
         public int Id { get; set; }
 
@@ -15,7 +16,7 @@ namespace Services.Reservations.Models
 
         public int ParticipantsCount { get; set; }
 
-        public TimeRange TimeRange { get; set; }
+        public TimeRange Range { get; set; }
 
         public List<TableModel> Tables { get; set; }
     }

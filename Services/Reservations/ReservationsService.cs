@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using AutoMapper;
 using Common;
+using Common.ConcurrentEvents;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Authentication.Exceptions;
@@ -16,11 +17,16 @@ namespace Services.Reservations
     {
         private readonly FoodFusionContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IConcurrentEventsService _concurrentEventsService;
 
-        public ReservationsService(FoodFusionContext dbContext, IMapper mapper)
+        public ReservationsService(
+            FoodFusionContext dbContext, 
+            IMapper mapper, 
+            IConcurrentEventsService concurrentEventsService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _concurrentEventsService = concurrentEventsService;
         }
 
         public IList<ReservationModel> GetRestaurantReservations(int restaurantId)
@@ -67,191 +73,19 @@ namespace Services.Reservations
             bool isReservationInRange(Reservation res) => res.EndTime > timeRange.Start ||
                     res.StartTime > timeRange.End;
 
-            // use service
-            // bool isReservationABlocker(Reservation res) => res
-
             var reservations = _dbContext.Reservations
+                .AsNoTracking()
                 .Include(r => r.ReservedTables)
                     .ThenInclude(rt => rt.Table)
                 .Where(r => r.RestaurantId == restaurantId)
-                .Where(isReservationInRange);
+                .Where(isReservationInRange)
+                .ToList();
+
+            var detailedReservations = _mapper.Map<IList<ReservationDetailedModel>>(reservations);
+            var concurrentReservations = _concurrentEventsService.GetConcurrentEvents(detailedReservations);
 
             throw new NotImplementedException();
         }
-
-
-        //private List<ConcurrentEvent> GetConcurrentReservationsPeriods(List<Reservation> reservations)
-        //{
-        //    if (!reservations.Any()) return new List<ConcurrentEvent>();
-
-        //    var orderedReservations = reservations
-        //        .OrderBy(r => r.StartTime)
-        //        .ThenBy(r => r.EndTime)
-        //        .ToList();
-
-        //    var overlappingReservationsPeriods = new List<ConcurrentEvent>();
-
-        //    var unhandeledReservations = new List<Reservation>(orderedReservations);
-        //    var ongoingReservations = new List<Reservation>();
-        //    var intervalStartTime = unhandeledReservations
-        //        .FirstOrDefault()?.StartTime ?? DateTime.MinValue;
-
-        //    while(unhandeledReservations.Any() || ongoingReservations.Any())
-        //    {
-        //        var concurrentReservations = new List<Reservation>();
-        //        DateTime intervalEndTime;
-
-        //        // reorder ongoing reservations
-        //        ongoingReservations = ongoingReservations.OrderBy(r => r.EndTime).ToList();
-
-        //        var firstOngoing = ongoingReservations.FirstOrDefault();
-        //        var firstUnhandled = unhandeledReservations.FirstOrDefault();
-
-        //        if (firstUnhandled == null || 
-        //            firstOngoing?.EndTime < firstUnhandled?.StartTime)
-        //        {
-        //            intervalEndTime = firstOngoing.EndTime;
-
-        //            var ongoingWithSameEnd = ongoingReservations
-        //                .TakeWhile(r => r.EndTime == intervalEndTime).ToList();
-                    
-        //            overlappingReservationsPeriods.Add(new ConcurrentEvent {
-        //                TimeRange = new TimeRange
-        //                {
-        //                    Start = intervalStartTime,
-        //                    End = intervalEndTime
-        //                },
-        //                Reservations = ongoingWithSameEnd
-        //            });
-
-        //            // take the left ones
-        //            ongoingReservations = ongoingReservations
-        //                .Except(ongoingWithSameEnd).ToList();
-
-        //            intervalStartTime = intervalEndTime;
-
-        //            continue;
-        //        }
-
-        //        var sameStartReservations = unhandeledReservations
-        //            .TakeWhile(r => r.StartTime == intervalStartTime).ToList();
-        //        var firstOfSameStart = sameStartReservations.FirstOrDefault();
-
-        //        unhandeledReservations = unhandeledReservations
-        //            .Except(sameStartReservations).ToList();
-        //        firstUnhandled = unhandeledReservations.FirstOrDefault();
-
-        //        intervalEndTime = firstUnhandled?.StartTime < firstOfSameStart?.EndTime ?
-        //            firstUnhandled?.StartTime ?? DateTime.MinValue :
-        //            firstOfSameStart?.EndTime ?? DateTime.MinValue;
-
-        //        var sameStartAndSameEnd = sameStartReservations
-        //            .TakeWhile(r => r.EndTime == intervalEndTime).ToList();
-
-        //        overlappingReservationsPeriods.Add(new ConcurrentEvent
-        //        {
-        //            TimeRange = new TimeRange
-        //            {
-        //                Start = intervalStartTime,
-        //                End = intervalEndTime
-        //            },
-        //            Reservations = sameStartAndSameEnd
-        //        });
-
-        //        // take the left ones
-        //        ongoingReservations = sameStartReservations
-        //            .Except(sameStartAndSameEnd).ToList();
-
-        //        intervalStartTime = intervalEndTime;
-
-        //        continue;
-        //    }
-
-        //    return overlappingReservationsPeriods;
-        //}
-
-
-        //// GetConcurrentReservationsPeriod
-        //private List<ConcurrentEvent> GetOverlappingReservations(List<Reservation> reservation)
-        //{
-        //    // TODO check not empty
-
-        //    var orderedReservations = reservations
-        //        .OrderBy(r => r.StartTime)
-        //        .ThenBy(r => r.EndTime)
-        //        .ToList();
-
-        //    var overlappingReservationsPeriods = new List<ConcurrentEvent>();
-
-        //    var inheritedReservations = new List<Reservation>();
-        //    //foreach interval
-        //    var concurencyPeriodStart = orderedReservations[0].StartTime;
-
-        //    var concurrentReservations = new List<Reservation>();
-
-        //    var i = 0;
-        //    while (orderedReservations[i].StartTime == orderedReservations[0].StartTime &&
-        //        i < orderedReservations.Count())
-        //    {
-        //        concurrentReservations.Add(orderedReservations[i]);
-        //        i++;
-        //    }
-
-        //    var indexOfLastConcurrentReservationWithTheSameEndAsFirst =
-        //        concurrentReservations.FindLastIndex(r => r.EndTime == concurrentReservations[0].EndTime);
-
-        //    // take all
-        //    inheritedReservations.AddRange(
-        //        concurrentReservations
-        //            .Skip(indexOfLastConcurrentReservationWithTheSameEndAsFirst + 1));
-
-        //    //in debd reservations = without the first
-
-        //    var isEndOfList = i < orderedReservations.Count()
-        //    if (i < orderedReservations.Count()) {
-        //        // the lowest between: 
-        //        // [end time of those with same start interval], 
-        //        // [end time of those inherited]
-        //        // [start time of the next one in list]
-        //        var concurencyPeriodEnd = new DateTime(Math.Min(
-        //            orderedReservations[0].EndTime.Ticks,
-        //            orderedReservations[i].StartTime.Ticks));
-        //    }
-                
-
-
-
-
-
-
-
-        //    concurencyPeriodStart = concurencyPeriodEnd;
-
-
-
-
-        //    for (var index = 0; index < orderedReservations.Count(); index++)
-        //    {
-        //        var concurrentReservations = new List<Reservation>();
-
-        //        var j = index;
-        //        while(orderedReservations[j].StartTime == orderedReservations[index].StartTime &&
-        //            j < orderedReservations.Count())
-        //        {
-        //            concurrentReservations.Add(orderedReservations[j]);
-        //            j++;
-        //        }
-
-        //        var
-        //    }
-        //}
-
-        //private class ConcurrentEvent
-        //{
-        //    public TimeRange TimeRange { get; set; }
-
-        //    public List<Reservation> Reservations { get; set; }
-        //}
 
         public ReservationDetailedModel GetReservation(int reservationId)
         {

@@ -16,6 +16,6 @@ namespace Services.Reservations.Models
 
         public int ParticipantsCount { get; set; }
 
-        public TimeRange TimeRange { get; set; }
+        public TimeRange Range { get; set; }
     }
 }
