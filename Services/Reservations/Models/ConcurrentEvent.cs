@@ -8,6 +8,6 @@ namespace Services.Reservations.Models
     {
         public TimeRange TimeRange { get; set; }
 
-        public List<Reservation> Reservations { get; set; }
+        public List<Reservation> Events { get; set; }
     }
 }

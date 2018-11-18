@@ -23,12 +23,12 @@ namespace Services.Reservations
             var unhandeledReservations = new List<Reservation>(orderedReservations);
             var ongoingReservations = new List<Reservation>();
             var intervalStartTime = unhandeledReservations
-                .FirstOrDefault()?.StartTime ?? DateTime.MinValue;
+                .FirstOrDefault()?.StartTime ?? default(DateTime);
 
             while (unhandeledReservations.Any() || ongoingReservations.Any())
             {
                 var concurrentReservations = new List<Reservation>();
-                DateTime intervalEndTime;
+                var intervalEndTime = default(DateTime);
 
                 // reorder ongoing reservations
                 ongoingReservations = ongoingReservations.OrderBy(r => r.EndTime).ToList();
@@ -41,8 +41,6 @@ namespace Services.Reservations
                 {
                     intervalEndTime = firstOngoing.EndTime;
 
-                    var ongoingWithSameEnd = ongoingReservations
-                        .TakeWhile(r => r.EndTime == intervalEndTime).ToList();
 
                     allConcurrentReservations.Add(new ConcurrentEvent
                     {
@@ -51,8 +49,11 @@ namespace Services.Reservations
                             Start = intervalStartTime,
                             End = intervalEndTime
                         },
-                        Reservations = ongoingWithSameEnd
+                        Events = ongoingReservations
                     });
+
+                    var ongoingWithSameEnd = ongoingReservations
+                        .TakeWhile(r => r.EndTime == intervalEndTime).ToList();
 
                     // take the left ones
                     ongoingReservations = ongoingReservations
@@ -71,12 +72,27 @@ namespace Services.Reservations
                     .Except(sameStartReservations).ToList();
                 firstUnhandled = unhandeledReservations.FirstOrDefault();
 
-                intervalEndTime = firstUnhandled?.StartTime < firstOfSameStart?.EndTime ?
-                    firstUnhandled?.StartTime ?? DateTime.MinValue :
-                    firstOfSameStart?.EndTime ?? DateTime.MinValue;
+                if (firstUnhandled == null) intervalEndTime = firstOfSameStart?.EndTime ?? default(DateTime);
+                if (firstOfSameStart == null) intervalEndTime = firstUnhandled?.StartTime ?? default(DateTime);
+
+                if(firstUnhandled != null && firstOfSameStart != null)
+                {
+                    intervalEndTime = firstUnhandled?.StartTime < firstOfSameStart?.EndTime ?
+                    firstUnhandled.StartTime : firstOfSameStart.EndTime;
+                }
+                
+                if(firstOngoing != null)
+                {
+                    if (intervalEndTime == default(DateTime)) intervalEndTime = firstOngoing.EndTime;
+                    else intervalEndTime = firstOngoing.EndTime < intervalEndTime ?
+                        firstOngoing.EndTime : intervalEndTime;
+                }
 
                 // TODO: rethink -> it gets empty. Check start time
-                var sameStartAndSameEnd = sameStartReservations
+                var sameStartThatAreEnding = sameStartReservations
+                    .TakeWhile(r => r.EndTime == intervalEndTime).ToList();
+
+                var ongoingThatAreEnding = ongoingReservations
                     .TakeWhile(r => r.EndTime == intervalEndTime).ToList();
 
                 allConcurrentReservations.Add(new ConcurrentEvent
@@ -86,12 +102,15 @@ namespace Services.Reservations
                         Start = intervalStartTime,
                         End = intervalEndTime
                     },
-                    Reservations = sameStartAndSameEnd
+                    Events = sameStartReservations
+                        .Concat(ongoingReservations).ToList()
                 });
 
                 // take the left ones
-                ongoingReservations = sameStartReservations
-                    .Except(sameStartAndSameEnd).ToList();
+                ongoingReservations = ongoingReservations
+                    .Except(ongoingThatAreEnding).ToList();
+                ongoingReservations.AddRange(sameStartReservations
+                    .Except(sameStartThatAreEnding));
 
                 intervalStartTime = intervalEndTime;
 
