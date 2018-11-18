@@ -1,12 +1,10 @@
-using Common;
-using Services.Reservations;
-using Services.Reservations.Models;
-using System;
+using Common.ConcurrentEvents;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
+using System;
+using System.Linq;
 
-namespace Services.Tests
+namespace Common.Tests
 {
     public class ConcurrentEventsTests
     {
