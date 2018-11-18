@@ -6,32 +6,32 @@ namespace Common.ConcurrentEvents
 {
     public class ConcurrentEventsService : IConcurrentEventsService
     {
-        public List<ConcurrentEvent> GetConcurrentEvents(IEnumerable<IEvent> reservations)
+        public List<ConcurrentEvent> GetConcurrentEvents(IEnumerable<IEvent> events)
         {
-            if (!reservations?.Any() ?? true) return new List<ConcurrentEvent>();
+            if (!events?.Any() ?? true) return new List<ConcurrentEvent>();
 
-            var orderedReservations = reservations
-                .OrderBy(r => r.Range.Start)
-                .ThenBy(r => r.Range.End)
+            var orderedEvents = events
+                .OrderBy(e => e.Range.Start)
+                .ThenBy(e => e.Range.End)
                 .ToList();
 
-            var allConcurrentReservations = new List<ConcurrentEvent>();
+            var allConcurrentEvents = new List<ConcurrentEvent>();
 
-            var unhandeledReservations = new List<IEvent>(orderedReservations);
-            var ongoingReservations = new List<IEvent>();
-            var intervalStartTime = unhandeledReservations
-                .FirstOrDefault()?.Range.Start ?? default(DateTime);
+            var unhandeledEvents = new List<IEvent>(orderedEvents);
+            var ongoingEvents = new List<IEvent>();
+            var intervalStartTime = unhandeledEvents
+                .FirstOrDefault()?.Range.Start ?? default;
 
-            while (unhandeledReservations.Any() || ongoingReservations.Any())
+            while (unhandeledEvents.Any() || ongoingEvents.Any())
             {
-                var concurrentReservations = new List<IEvent>();
-                var intervalEndTime = default(DateTime);
+                var concurrentEvents = new List<IEvent>();
+                DateTime intervalEndTime = default;
 
-                // reorder ongoing reservations
-                ongoingReservations = ongoingReservations.OrderBy(r => r.Range.End).ToList();
+                // reorder ongoing events
+                ongoingEvents = ongoingEvents.OrderBy(e => e.Range.End).ToList();
 
-                var firstOngoing = ongoingReservations.FirstOrDefault();
-                var firstUnhandled = unhandeledReservations.FirstOrDefault();
+                var firstOngoing = ongoingEvents.FirstOrDefault();
+                var firstUnhandled = unhandeledEvents.FirstOrDefault();
 
                 if (firstUnhandled == null ||
                     firstOngoing?.Range.End < firstUnhandled?.Range.Start)
@@ -39,21 +39,21 @@ namespace Common.ConcurrentEvents
                     intervalEndTime = firstOngoing.Range.End;
 
 
-                    allConcurrentReservations.Add(new ConcurrentEvent
+                    allConcurrentEvents.Add(new ConcurrentEvent
                     {
                         Range = new TimeRange
                         {
                             Start = intervalStartTime,
                             End = intervalEndTime
                         },
-                        Events = ongoingReservations
+                        Events = ongoingEvents
                     });
 
-                    var ongoingWithSameEnd = ongoingReservations
-                        .TakeWhile(r => r.Range.End == intervalEndTime).ToList();
+                    var ongoingWithSameEnd = ongoingEvents
+                        .TakeWhile(e => e.Range.End == intervalEndTime).ToList();
 
                     // take the left ones
-                    ongoingReservations = ongoingReservations
+                    ongoingEvents = ongoingEvents
                         .Except(ongoingWithSameEnd).ToList();
 
                     intervalStartTime = intervalEndTime;
@@ -61,16 +61,16 @@ namespace Common.ConcurrentEvents
                     continue;
                 }
 
-                var sameStartReservations = unhandeledReservations
-                    .TakeWhile(r => r.Range.Start == intervalStartTime).ToList();
-                var firstOfSameStart = sameStartReservations.FirstOrDefault();
+                var sameStartEvents = unhandeledEvents
+                    .TakeWhile(e => e.Range.Start == intervalStartTime).ToList();
+                var firstOfSameStart = sameStartEvents.FirstOrDefault();
 
-                unhandeledReservations = unhandeledReservations
-                    .Except(sameStartReservations).ToList();
-                firstUnhandled = unhandeledReservations.FirstOrDefault();
+                unhandeledEvents = unhandeledEvents
+                    .Except(sameStartEvents).ToList();
+                firstUnhandled = unhandeledEvents.FirstOrDefault();
 
-                if (firstUnhandled == null) intervalEndTime = firstOfSameStart?.Range.End ?? default(DateTime);
-                if (firstOfSameStart == null) intervalEndTime = firstUnhandled?.Range.Start ?? default(DateTime);
+                if (firstUnhandled == null) intervalEndTime = firstOfSameStart?.Range.End ?? default;
+                if (firstOfSameStart == null) intervalEndTime = firstUnhandled?.Range.Start ?? default;
 
                 if(firstUnhandled != null && firstOfSameStart != null)
                 {
@@ -80,33 +80,32 @@ namespace Common.ConcurrentEvents
                 
                 if(firstOngoing != null)
                 {
-                    if (intervalEndTime == default(DateTime)) intervalEndTime = firstOngoing.Range.End;
+                    if (intervalEndTime == default) intervalEndTime = firstOngoing.Range.End;
                     else intervalEndTime = firstOngoing.Range.End < intervalEndTime ?
                         firstOngoing.Range.End : intervalEndTime;
                 }
+                
+                var sameStartThatAreEnding = sameStartEvents
+                    .TakeWhile(e => e.Range.End == intervalEndTime).ToList();
 
-                // TODO: rethink -> it gets empty. Check start time
-                var sameStartThatAreEnding = sameStartReservations
-                    .TakeWhile(r => r.Range.End == intervalEndTime).ToList();
+                var ongoingThatAreEnding = ongoingEvents
+                    .TakeWhile(e => e.Range.End == intervalEndTime).ToList();
 
-                var ongoingThatAreEnding = ongoingReservations
-                    .TakeWhile(r => r.Range.End == intervalEndTime).ToList();
-
-                allConcurrentReservations.Add(new ConcurrentEvent
+                allConcurrentEvents.Add(new ConcurrentEvent
                 {
                     Range = new TimeRange
                     {
                         Start = intervalStartTime,
                         End = intervalEndTime
                     },
-                    Events = sameStartReservations
-                        .Concat(ongoingReservations).ToList()
+                    Events = sameStartEvents
+                        .Concat(ongoingEvents).ToList()
                 });
 
                 // take the left ones
-                ongoingReservations = ongoingReservations
+                ongoingEvents = ongoingEvents
                     .Except(ongoingThatAreEnding).ToList();
-                ongoingReservations.AddRange(sameStartReservations
+                ongoingEvents.AddRange(sameStartEvents
                     .Except(sameStartThatAreEnding));
 
                 intervalStartTime = intervalEndTime;
@@ -114,7 +113,7 @@ namespace Common.ConcurrentEvents
                 continue;
             }
 
-            return allConcurrentReservations;
+            return allConcurrentEvents;
         }
     }
 }
