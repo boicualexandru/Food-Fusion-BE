@@ -8,11 +8,11 @@ namespace Common.Tests
 {
     public class ConcurrentEventsTests
     {
-        private readonly IConcurrentEventsService _concurrentEventsService;
+        private readonly IConcurrentEventsService<TestEvent> _concurrentEventsService;
 
         public ConcurrentEventsTests()
         {
-            _concurrentEventsService = new ConcurrentEventsService();
+            _concurrentEventsService = new ConcurrentEventsService<TestEvent>();
         }
 
         private class TestEvent : IEvent

@@ -2,10 +2,10 @@
 
 namespace Common.ConcurrentEvents
 {
-    public class ConcurrentEvent
+    public class ConcurrentEvent<TEvent> where TEvent : IEvent
     {
         public TimeRange Range { get; set; }
 
-        public List<IEvent> Events { get; set; }
+        public List<TEvent> Events { get; set; }
     }
 }

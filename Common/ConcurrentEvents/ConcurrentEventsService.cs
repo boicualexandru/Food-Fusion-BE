@@ -4,21 +4,21 @@ using System.Linq;
 
 namespace Common.ConcurrentEvents
 {
-    public class ConcurrentEventsService : IConcurrentEventsService
+    public class ConcurrentEventsService<TEvent> : IConcurrentEventsService<TEvent> where TEvent : IEvent
     {
-        public List<ConcurrentEvent> GetConcurrentEvents(IEnumerable<IEvent> events)
+        public List<ConcurrentEvent<TEvent>> GetConcurrentEvents(IEnumerable<TEvent> events)
         {
-            if (!events?.Any() ?? true) return new List<ConcurrentEvent>();
+            if (!events?.Any() ?? true) return new List<ConcurrentEvent<TEvent>>();
 
             var orderedEvents = events
                 .OrderBy(e => e.Range.Start)
                 .ThenBy(e => e.Range.End)
                 .ToList();
 
-            var allConcurrentEvents = new List<ConcurrentEvent>();
+            var allConcurrentEvents = new List<ConcurrentEvent<TEvent>>();
 
-            var unhandeledEvents = new List<IEvent>(orderedEvents);
-            var ongoingEvents = new List<IEvent>();
+            var unhandeledEvents = new List<TEvent>(orderedEvents);
+            var ongoingEvents = new List<TEvent>();
             var intervalStartTime = unhandeledEvents
                 .FirstOrDefault()?.Range.Start ?? default;
 
@@ -39,7 +39,7 @@ namespace Common.ConcurrentEvents
                     intervalEndTime = firstOngoing.Range.End;
 
 
-                    allConcurrentEvents.Add(new ConcurrentEvent
+                    allConcurrentEvents.Add(new ConcurrentEvent<TEvent>
                     {
                         Range = new TimeRange
                         {
@@ -91,7 +91,7 @@ namespace Common.ConcurrentEvents
                 var ongoingThatAreEnding = ongoingEvents
                     .TakeWhile(e => e.Range.End == intervalEndTime).ToList();
 
-                allConcurrentEvents.Add(new ConcurrentEvent
+                allConcurrentEvents.Add(new ConcurrentEvent<TEvent>
                 {
                     Range = new TimeRange
                     {

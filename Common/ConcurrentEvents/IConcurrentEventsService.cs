@@ -2,8 +2,8 @@
 
 namespace Common.ConcurrentEvents
 {
-    public interface IConcurrentEventsService
+    public interface IConcurrentEventsService<TEvent> where TEvent : IEvent
     {
-        List<ConcurrentEvent> GetConcurrentEvents(IEnumerable<IEvent> reservations);
+        List<ConcurrentEvent<TEvent>> GetConcurrentEvents(IEnumerable<TEvent> reservations);
     }
 }
