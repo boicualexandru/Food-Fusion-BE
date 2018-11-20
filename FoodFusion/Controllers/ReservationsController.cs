@@ -13,11 +13,15 @@ namespace WebApi.Controllers
     [ApiController]
     public class ReservationsController : ControllerBase
     {
-        private readonly IReservationsService _rReservationsService;
+        private readonly IReservationsService _reservationsService;
+        private readonly IAvailabilityService _availabilityService;
 
-        public ReservationsController(IReservationsService rReservationsService)
+        public ReservationsController(
+            IReservationsService reservationsService, 
+            IAvailabilityService availabilityService)
         {
-            _rReservationsService = rReservationsService;
+            _reservationsService = reservationsService;
+            _availabilityService = availabilityService;
         }
 
         // GET: api/Reservations
@@ -28,9 +32,10 @@ namespace WebApi.Controllers
             [FromQuery] DateTime start,
             [FromQuery] DateTime end)
         {
-            var range = new TimeRange { Start = start, End = end };
-            var availability = _rReservationsService.GetAvailability(
-                restaurantId, participantsCount, range);
+            var timeRange = new TimeRange { Start = start, End = end };
+
+            var availability = _availabilityService
+                .GetUnavailableTimeRanges(restaurantId, participantsCount, timeRange);
 
             return Ok(availability);
         }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AutoMapper;
-using Common;
 using Common.ConcurrentEvents;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
@@ -17,16 +15,14 @@ namespace Services.Reservations
     {
         private readonly FoodFusionContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IConcurrentEventsService _concurrentEventsService;
 
         public ReservationsService(
             FoodFusionContext dbContext, 
             IMapper mapper, 
-            IConcurrentEventsService concurrentEventsService)
+            IConcurrentEventsService<ReservationDetailedModel> concurrentEventsService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _concurrentEventsService = concurrentEventsService;
         }
 
         public IList<ReservationModel> GetRestaurantReservations(int restaurantId)
@@ -55,35 +51,6 @@ namespace Services.Reservations
 
         public ReservationDetailedModel AddReservation(ReservationDetailedModel reservation)
         {
-            throw new NotImplementedException();
-        }
-
-        public IList<TimeRange> GetAvailability(int restaurantId, int participantsCount, TimeRange timeRange)
-        {
-            var restaurant = _dbContext.Restaurants
-                .AsNoTracking()
-                .Include(r => r.Map)
-                    .ThenInclude(m => m.Tables)
-                .FirstOrDefault(r => r.Id == restaurantId);
-            restaurant = restaurant ?? throw new RestaurantNotFoundException();
-
-            var tables = restaurant.Map.Tables;
-
-            // TODO: improve this to be done in one query
-            bool isReservationInRange(Reservation res) => res.EndTime > timeRange.Start ||
-                    res.StartTime > timeRange.End;
-
-            var reservations = _dbContext.Reservations
-                .AsNoTracking()
-                .Include(r => r.ReservedTables)
-                    .ThenInclude(rt => rt.Table)
-                .Where(r => r.RestaurantId == restaurantId)
-                .Where(isReservationInRange)
-                .ToList();
-
-            var detailedReservations = _mapper.Map<IList<ReservationDetailedModel>>(reservations);
-            var concurrentReservations = _concurrentEventsService.GetConcurrentEvents(detailedReservations);
-
             throw new NotImplementedException();
         }
 

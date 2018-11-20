@@ -2,7 +2,7 @@
 
 namespace Common.ConcurrentEvents
 {
-    public class ConcurrentEvent<TEvent> where TEvent : IEvent
+    public class ConcurrentEvents<TEvent> where TEvent : IEvent
     {
         public TimeRange Range { get; set; }
 

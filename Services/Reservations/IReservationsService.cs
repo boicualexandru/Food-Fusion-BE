@@ -10,7 +10,6 @@ namespace Services.Reservations
         IList<ReservationModel> GetUserReservations(int userId);
         IList<ReservationModel> GetRestaurantReservations(int restaurantId);
         ReservationDetailedModel GetReservation(int reservationId);
-        IList<TimeRange> GetAvailability(int restaurantId, int participantsCount, TimeRange timeRange);
         // TODO: parameter type should contain only: restaurantId, userId, participantsCount, list of tableIds, timeRange
         // but it might be he same as returned type
         ReservationDetailedModel AddReservation(ReservationDetailedModel reservation);

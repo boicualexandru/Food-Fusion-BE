@@ -121,6 +121,7 @@ namespace FoodFusion
             services.AddScoped<IAuthorizationHandler, EmployeeAuthorizationHandler>();
 
             services.AddTransient<IReservationsService, ReservationsService>();
+            services.AddTransient<IAvailabilityService, AvailabilityService>();
             services.AddTransient(typeof(IConcurrentEventsService<>), typeof(ConcurrentEventsService<>));
         }
 
