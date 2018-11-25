@@ -70,10 +70,20 @@ namespace WebApi.Controllers
         {
         }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // DELETE: api/Reservations/5
+        [HttpDelete("Reservations/{id}")]
+        public IActionResult Delete(int id)
         {
+            try
+            {
+                _reservationsService.RemoveReservation(id);
+
+                return Ok();
+            }
+            catch (ReservationNotFoundException)
+            {
+                return NotFound();
+            }
         }
     }
 }

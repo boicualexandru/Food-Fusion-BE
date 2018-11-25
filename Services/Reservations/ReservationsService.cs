@@ -71,7 +71,12 @@ namespace Services.Reservations
 
         public void RemoveReservation(int reservationId)
         {
-            throw new NotImplementedException();
+            var reservation = _dbContext.Reservations
+                .FirstOrDefault(r => r.Id == reservationId);
+            reservation = reservation ?? throw new ReservationNotFoundException();
+
+            _dbContext.Reservations.Remove(reservation);
+            _dbContext.SaveChanges();
         }
 
         public ReservationDetailedModel UpdateReservation(ReservationDetailedModel reservation)
