@@ -9,6 +9,7 @@ using Services.Authentication.Exceptions;
 using Services.Reservations.Exceptions;
 using Services.Reservations.Models;
 using Services.Restaurants.Exceptions;
+using Services.Tables.Exceptions;
 
 namespace Services.Reservations
 {
@@ -16,14 +17,17 @@ namespace Services.Reservations
     {
         private readonly FoodFusionContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IAvailabilityService _availabilityService;
 
         public ReservationsService(
             FoodFusionContext dbContext, 
             IMapper mapper, 
-            IConcurrentEventsService<ReservationDetailedModel> concurrentEventsService)
+            IConcurrentEventsService<ReservationDetailedModel> concurrentEventsService,
+            IAvailabilityService availabilityService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _availabilityService = availabilityService;
         }
 
         public IList<ReservationModel> GetRestaurantReservations(int restaurantId)
@@ -50,9 +54,49 @@ namespace Services.Reservations
             return _mapper.Map<IList<ReservationModel>>(restaurant.Reservations);
         }
 
-        public ReservationDetailedModel AddReservation(ReservationDetailedModel reservation)
+        //TODO: Check if the participants could fit on one single table
+        public ReservationDetailedModel AddReservation(ReservationRequestModel reservationModel)
         {
-            throw new NotImplementedException();
+            if (reservationModel.TableIds == null || reservationModel.TableIds.Count == 0)
+            {
+                // no tables were selected
+                throw new TableNotFoundException();
+            }
+
+            reservationModel.TableIds = reservationModel.TableIds.Distinct().ToList();
+
+            var tablesFromDb = _dbContext.RestaurantTables
+                .Include(t => t.Map)
+                .Where(t => reservationModel.TableIds.Contains(t.Id))
+                .ToList();
+
+            // check that all the tables are present in the DB
+            if(reservationModel.TableIds.Count != tablesFromDb.Count)
+            {
+                throw new TableNotFoundException();
+            }
+
+            // check that the tables are belonging to this restaurant
+            var doTablesBelongToThisRestaurant = tablesFromDb
+                .All(t => t.Map.RestaurantId == reservationModel.RestaurantId);
+
+            if (!doTablesBelongToThisRestaurant)
+            {
+                throw new TableNotFoundException();
+            }
+            
+            var areTablesAvailable = _availabilityService.AreTablesAvailable(reservationModel.TableIds, reservationModel.Range);
+            if (!areTablesAvailable) throw new ReservationNotAvalableException();
+
+            var reservation = _mapper.Map<Reservation>(reservationModel);
+
+            _dbContext.Reservations.Add(reservation);
+            _dbContext.SaveChanges();
+
+            _dbContext.Entry(reservation).Reference(p => p.Restaurant).Load();
+            _dbContext.Entry(reservation).Reference(p => p.User).Load();
+
+            return _mapper.Map<ReservationDetailedModel>(reservation);
         }
 
         public ReservationDetailedModel GetReservation(int reservationId)
@@ -79,8 +123,16 @@ namespace Services.Reservations
             _dbContext.SaveChanges();
         }
 
-        public ReservationDetailedModel UpdateReservation(ReservationDetailedModel reservation)
+        public ReservationDetailedModel UpdateReservation(ReservationRequestModel reservation)
         {
+            //var restaurant = _dbContext.Restaurants
+            //    .FirstOrDefault(r => r.Id == restaurantModel.Id);
+            //restaurant = restaurant ?? throw new RestaurantNotFoundException();
+
+            //restaurant = _mapper.Map(restaurantModel, restaurant);
+
+            //_dbContext.SaveChanges();
+
             throw new NotImplementedException();
         }
     }

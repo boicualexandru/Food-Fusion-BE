@@ -12,8 +12,8 @@ namespace Services.Reservations
         ReservationDetailedModel GetReservation(int reservationId);
         // TODO: parameter type should contain only: restaurantId, userId, participantsCount, list of tableIds, timeRange
         // but it might be he same as returned type
-        ReservationDetailedModel AddReservation(ReservationDetailedModel reservation);
-        ReservationDetailedModel UpdateReservation(ReservationDetailedModel reservation);
+        ReservationDetailedModel AddReservation(ReservationRequestModel reservation);
+        ReservationDetailedModel UpdateReservation(ReservationRequestModel reservation);
         void RemoveReservation(int reservationId);
     }
 }

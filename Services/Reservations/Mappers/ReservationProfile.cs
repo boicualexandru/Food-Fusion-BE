@@ -2,6 +2,7 @@
 using Common;
 using DataAccess.Models;
 using Services.Reservations.Models;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Services.Reservations.Mappers
@@ -31,6 +32,16 @@ namespace Services.Reservations.Mappers
                     }));
             CreateMap<ReservationDetailedModel, Reservation>()
                 .ForMember(reservation => reservation.Id, opt => opt.Ignore());
+
+
+            CreateMap<ReservationRequestModel, Reservation>()
+                .ForMember(reservation => reservation.StartTime, opt => opt.MapFrom(r => r.Range.Start))
+                .ForMember(reservation => reservation.EndTime, opt => opt.MapFrom(r => r.Range.End))
+                .ForMember(reservation => reservation.ReservedTables, opt => opt.MapFrom(r => r.TableIds
+                    .Select(tId => new ReservedTable
+                    {
+                        RestaurantTableId = tId
+                    })));
         }
     }
 }

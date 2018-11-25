@@ -70,6 +70,19 @@ namespace Services.Reservations
             return unavailableTimeRanges;
         }
 
+        public bool AreTablesAvailable(IList<int> tableIds, TimeRange range)
+        {
+            var reservedTables = _dbContext.ReservedTables
+                .AsNoTracking()
+                .Include(rt => rt.Reservation)
+                .Where(rt => tableIds.Contains(rt.RestaurantTableId));
+
+            var isAnyReservationOverlapping = reservedTables
+                .Any(rt => rt.Reservation.StartTime < range.End && rt.Reservation.EndTime > range.Start);
+
+            return !isAnyReservationOverlapping;
+        }
+
         private IList<TablesAvailability> GetTablesAvailabilityList(
             IList<TableModel> tables, 
             IList<ReservationDetailedModel> existingReservations)
