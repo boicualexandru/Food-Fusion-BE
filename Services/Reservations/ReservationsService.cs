@@ -6,6 +6,7 @@ using Common.ConcurrentEvents;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Authentication.Exceptions;
+using Services.Reservations.Exceptions;
 using Services.Reservations.Models;
 using Services.Restaurants.Exceptions;
 
@@ -56,7 +57,16 @@ namespace Services.Reservations
 
         public ReservationDetailedModel GetReservation(int reservationId)
         {
-            throw new NotImplementedException();
+            var reservation = _dbContext.Reservations
+                .AsNoTracking()
+                .Include(r => r.Restaurant)
+                .Include(r => r.User)
+                .Include(r => r.ReservedTables)
+                    .ThenInclude(rt => rt.Table)
+                .FirstOrDefault(r => r.Id == reservationId);
+            reservation = reservation ?? throw new ReservationNotFoundException();
+
+            return _mapper.Map<ReservationDetailedModel>(reservation);
         }
 
         public void RemoveReservation(int reservationId)

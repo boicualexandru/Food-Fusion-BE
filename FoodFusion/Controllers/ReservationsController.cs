@@ -6,9 +6,11 @@ using Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Reservations;
+using Services.Reservations.Exceptions;
 
 namespace WebApi.Controllers
 {
+    //TODO: Add Authorization
     [Route("api")]
     [ApiController]
     public class ReservationsController : ControllerBase
@@ -24,9 +26,9 @@ namespace WebApi.Controllers
             _availabilityService = availabilityService;
         }
 
-        // GET: api/Reservations
-        [HttpGet("Restaurants/{restaurantId}/availability")]
-        public IActionResult Get(
+        // GET: api/Restaurants/5/unavailability
+        [HttpGet("Restaurants/{restaurantId}/unavailability")]
+        public IActionResult GetUnavailability(
             [FromRoute] int restaurantId, 
             [FromQuery] int participantsCount, 
             [FromQuery] DateTime start,
@@ -34,17 +36,26 @@ namespace WebApi.Controllers
         {
             var timeRange = new TimeRange { Start = start, End = end };
 
-            var availability = _availabilityService
+            var unavailability = _availabilityService
                 .GetUnavailableTimeRanges(restaurantId, participantsCount, timeRange);
 
-            return Ok(availability);
+            return Ok(unavailability);
         }
 
         // GET: api/Reservations/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpGet("Reservations/{id}")]
+        public IActionResult Get(int id)
         {
-            return "value";
+            try
+            {
+                var reservation = _reservationsService.GetReservation(id);
+
+                return Ok(reservation);
+            }
+            catch (ReservationNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         // POST: api/Reservations
