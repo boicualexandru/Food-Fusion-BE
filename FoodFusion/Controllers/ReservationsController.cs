@@ -63,24 +63,37 @@ namespace WebApi.Controllers
 
         // POST: api/Restaurant/5/Reservations
         [HttpPost("Restaurants/{restaurantId}/Reservations")]
-        public IActionResult Post([FromRoute] int restaurantId, [FromBody] ReservationRequestModel reservationModel)
+        public IActionResult Post([FromRoute] int restaurantId, [FromBody] ReservationRequestModel reservationRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdClaim, out var userId)) throw new InvalidClaimException();
 
-            reservationModel.UserId = userId;
-            reservationModel.RestaurantId = restaurantId;
+            reservationRequest.UserId = userId;
+            reservationRequest.RestaurantId = restaurantId;
             
-            var reservation = _reservationsService.AddReservation(reservationModel);
+            var reservation = _reservationsService.AddReservation(reservationRequest);
             return Ok(reservation);
         }
 
-        // PUT: api/Reservations/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // POST: api/Restaurant/5/Reservations
+        [HttpPut("Reservations/{id}")]
+        public IActionResult Put(int id, [FromBody] ReservationRequestModel reservationRequest)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            reservationRequest.Id = id;
+
+            try
+            {
+                var reservation = _reservationsService.UpdateReservation(reservationRequest);
+                return Ok(reservation);
+            }
+            catch (ReservationNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         // DELETE: api/Reservations/5

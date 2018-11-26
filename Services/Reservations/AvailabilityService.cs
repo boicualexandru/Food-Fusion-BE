@@ -70,12 +70,24 @@ namespace Services.Reservations
             return unavailableTimeRanges;
         }
 
-        public bool AreTablesAvailable(IList<int> tableIds, TimeRange range)
+        /// <summary>
+        /// Checks if all the given tables are available for the given time range
+        /// </summary>
+        /// <param name="tableIds">Ids of tables that will be checked if they are valid for specified time range</param>
+        /// <param name="range">Time range on which the availability will be checked</param>
+        /// <param name="reservedTablesToExclude">Ids of reserved tables that will be excluded from checking if they overlap with the requested tables</param>
+        /// <returns></returns>
+        public bool AreTablesAvailable(IList<int> tableIds, TimeRange range, IList<int> reservedTableidsToExclude = null)
         {
             var reservedTables = _dbContext.ReservedTables
                 .AsNoTracking()
                 .Include(rt => rt.Reservation)
                 .Where(rt => tableIds.Contains(rt.RestaurantTableId));
+
+            if(reservedTableidsToExclude?.Count > 0)
+            {
+                reservedTables = reservedTables.Where(rt => !reservedTableidsToExclude.Contains(rt.Id));
+            }
 
             var isAnyReservationOverlapping = reservedTables
                 .Any(rt => rt.Reservation.StartTime < range.End && rt.Reservation.EndTime > range.Start);

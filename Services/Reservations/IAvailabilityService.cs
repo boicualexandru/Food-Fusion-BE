@@ -8,7 +8,7 @@ namespace Services.Reservations
     {
         IList<TimeRange> GetUnavailableTimeRanges(int restaurantId, int participantsCount, TimeRange timeRange);
 
-        bool AreTablesAvailable(IList<int> tableIds, TimeRange range);
+        bool AreTablesAvailable(IList<int> tableIds, TimeRange range, IList<int> reservedTableidsToExclude = null);
 
         bool AreTooManyTablesRequested(IList<RestaurantTable> tables, int participantsCount);
     }

@@ -54,48 +54,14 @@ namespace Services.Reservations
             return _mapper.Map<IList<ReservationModel>>(restaurant.Reservations);
         }
 
-        public ReservationDetailedModel AddReservation(ReservationRequestModel reservationModel)
+        public ReservationDetailedModel AddReservation(ReservationRequestModel reservationRequest)
         {
-            if (reservationModel.TableIds == null || reservationModel.TableIds.Count == 0)
-            {
-                // no tables were selected
-                throw new TableNotFoundException();
-            }
+            ValidateReservationRequest(reservationRequest);
 
-            reservationModel.TableIds = reservationModel.TableIds.Distinct().ToList();
-
-            var tablesFromDb = _dbContext.RestaurantTables
-                .Include(t => t.Map)
-                .Where(t => reservationModel.TableIds.Contains(t.Id))
-                .ToList();
-
-            // check that all the tables are present in the DB
-            if(reservationModel.TableIds.Count != tablesFromDb.Count)
-            {
-                throw new TableNotFoundException();
-            }
-
-            // check if the table assignation is optimal
-            var areTooManyTablesRequested =
-                _availabilityService.AreTooManyTablesRequested(tablesFromDb, reservationModel.ParticipantsCount ?? 0);
-            if (areTooManyTablesRequested)
-            {
-                throw new TooManyTablesRequestedException();
-            }
-
-            // check that the tables are belonging to this restaurant
-            var doTablesBelongToThisRestaurant = tablesFromDb
-                .All(t => t.Map.RestaurantId == reservationModel.RestaurantId);
-
-            if (!doTablesBelongToThisRestaurant)
-            {
-                throw new TableNotFoundException();
-            }
-            
-            var areTablesAvailable = _availabilityService.AreTablesAvailable(reservationModel.TableIds, reservationModel.Range);
+            var areTablesAvailable = _availabilityService.AreTablesAvailable(reservationRequest.TableIds, reservationRequest.Range);
             if (!areTablesAvailable) throw new ReservationNotAvalableException();
 
-            var reservation = _mapper.Map<Reservation>(reservationModel);
+            var reservation = _mapper.Map<Reservation>(reservationRequest);
 
             _dbContext.Reservations.Add(reservation);
             _dbContext.SaveChanges();
@@ -130,17 +96,76 @@ namespace Services.Reservations
             _dbContext.SaveChanges();
         }
 
-        public ReservationDetailedModel UpdateReservation(ReservationRequestModel reservation)
+        public ReservationDetailedModel UpdateReservation(ReservationRequestModel reservationRequest)
         {
-            //var restaurant = _dbContext.Restaurants
-            //    .FirstOrDefault(r => r.Id == restaurantModel.Id);
-            //restaurant = restaurant ?? throw new RestaurantNotFoundException();
+            ValidateReservationRequest(reservationRequest);
 
-            //restaurant = _mapper.Map(restaurantModel, restaurant);
+            var reservation = _dbContext.Reservations
+                .Include(r => r.ReservedTables)
+                .Include(r => r.Restaurant)
+                .Include(r => r.User)
+                .FirstOrDefault(r => r.Id == reservationRequest.Id);
+            reservation = reservation ?? throw new ReservationNotFoundException();
 
-            //_dbContext.SaveChanges();
+            // check if the newly added tables are available
+            var oldTableIds = reservation.ReservedTables
+                .Select(rt => rt.RestaurantTableId).ToList();
+            var updatedTableIds = reservationRequest.TableIds;
 
-            throw new NotImplementedException();
+            var newlyAddedTableIds = updatedTableIds.Except(oldTableIds).ToList();
+
+            var oldReservedTables = reservation.ReservedTables.Select(rt => rt.Id).ToList();
+            var areTablesAvailable = _availabilityService.AreTablesAvailable(newlyAddedTableIds, reservationRequest.Range, oldReservedTables);
+            if (!areTablesAvailable) throw new ReservationNotAvalableException();
+
+            reservation = _mapper.Map(reservationRequest, reservation);
+            
+            // restaurant and user are not updateable
+            _dbContext.Entry(reservation).Property(r => r.RestaurantId).IsModified = false;
+            _dbContext.Entry(reservation).Property(r => r.UserId).IsModified = false;
+
+            _dbContext.SaveChanges();
+
+            return _mapper.Map<ReservationDetailedModel>(reservation);
+        }
+
+        private void ValidateReservationRequest(ReservationRequestModel reservationRequest)
+        {
+            if (reservationRequest.TableIds == null || reservationRequest.TableIds.Count == 0)
+            {
+                // no tables were selected
+                throw new TableNotFoundException();
+            }
+
+            reservationRequest.TableIds = reservationRequest.TableIds.Distinct().ToList();
+
+            var tablesFromDb = _dbContext.RestaurantTables
+                .Include(t => t.Map)
+                .Where(t => reservationRequest.TableIds.Contains(t.Id))
+                .ToList();
+
+            // check that all the tables are present in the DB
+            if (reservationRequest.TableIds.Count != tablesFromDb.Count)
+            {
+                throw new TableNotFoundException();
+            }
+
+            // check if the table assignation is optimal
+            var areTooManyTablesRequested =
+                _availabilityService.AreTooManyTablesRequested(tablesFromDb, reservationRequest.ParticipantsCount ?? 0);
+            if (areTooManyTablesRequested)
+            {
+                throw new TooManyTablesRequestedException();
+            }
+
+            // check that the tables are belonging to this restaurant
+            var doTablesBelongToThisRestaurant = tablesFromDb
+                .All(t => t.Map.RestaurantId == reservationRequest.RestaurantId);
+
+            if (!doTablesBelongToThisRestaurant)
+            {
+                throw new TableNotFoundException();
+            }
         }
     }
 }
