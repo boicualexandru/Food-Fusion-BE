@@ -83,6 +83,21 @@ namespace Services.Reservations
             return !isAnyReservationOverlapping;
         }
 
+        public bool AreTooManyTablesRequested(IList<RestaurantTable> tables, int participantsCount)
+        {
+            var tablesSeatsCount = tables.Select(t => t.Seats).OrderByDescending(s => s);
+
+            var seatsLeftToFit = participantsCount;
+            foreach (var seatsCount in tablesSeatsCount)
+            {
+                if (seatsLeftToFit <= 0) return true;
+
+                seatsLeftToFit -= seatsCount;
+            }
+
+            return false;
+        }
+
         private IList<TablesAvailability> GetTablesAvailabilityList(
             IList<TableModel> tables, 
             IList<ReservationDetailedModel> existingReservations)

@@ -1,4 +1,5 @@
 ﻿using Common;
+using DataAccess.Models;
 using System.Collections.Generic;
 
 namespace Services.Reservations
@@ -8,5 +9,7 @@ namespace Services.Reservations
         IList<TimeRange> GetUnavailableTimeRanges(int restaurantId, int participantsCount, TimeRange timeRange);
 
         bool AreTablesAvailable(IList<int> tableIds, TimeRange range);
+
+        bool AreTooManyTablesRequested(IList<RestaurantTable> tables, int participantsCount);
     }
 }

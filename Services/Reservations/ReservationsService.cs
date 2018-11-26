@@ -54,7 +54,6 @@ namespace Services.Reservations
             return _mapper.Map<IList<ReservationModel>>(restaurant.Reservations);
         }
 
-        //TODO: Check if the participants could fit on one single table
         public ReservationDetailedModel AddReservation(ReservationRequestModel reservationModel)
         {
             if (reservationModel.TableIds == null || reservationModel.TableIds.Count == 0)
@@ -74,6 +73,14 @@ namespace Services.Reservations
             if(reservationModel.TableIds.Count != tablesFromDb.Count)
             {
                 throw new TableNotFoundException();
+            }
+
+            // check if the table assignation is optimal
+            var areTooManyTablesRequested =
+                _availabilityService.AreTooManyTablesRequested(tablesFromDb, reservationModel.ParticipantsCount ?? 0);
+            if (areTooManyTablesRequested)
+            {
+                throw new TooManyTablesRequestedException();
             }
 
             // check that the tables are belonging to this restaurant
