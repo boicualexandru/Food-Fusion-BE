@@ -45,22 +45,6 @@ namespace WebApi.Controllers
             return Ok(unavailability);
         }
 
-        // GET: api/Reservations/5
-        [HttpGet("Reservations/{id}")]
-        public IActionResult Get(int id)
-        {
-            try
-            {
-                var reservation = _reservationsService.GetReservation(id);
-
-                return Ok(reservation);
-            }
-            catch (ReservationNotFoundException)
-            {
-                return NotFound();
-            }
-        }
-
         // POST: api/Restaurant/5/Reservations
         [HttpPost("Restaurants/{restaurantId}/Reservations")]
         public IActionResult Post([FromRoute] int restaurantId, [FromBody] ReservationRequestModel reservationRequest)
@@ -77,7 +61,44 @@ namespace WebApi.Controllers
             return Ok(reservation);
         }
 
-        // POST: api/Restaurant/5/Reservations
+        // GET: api/Restaurant/5/Reservations
+        [HttpGet("Restaurant/{restaurantId}/Reservations")]
+        public IActionResult GetRestaurantReservations(int restaurantId)
+        {
+            var reservations = _reservationsService.GetRestaurantReservations(restaurantId);
+
+            return Ok(reservations);
+        }
+
+        // GET: api/Reservations
+        [HttpGet("Reservations")]
+        public IActionResult GetUserReservations()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) throw new InvalidClaimException();
+
+            var reservations = _reservationsService.GetUserReservations(userId);
+
+            return Ok(reservations);
+        }
+
+        // GET: api/Reservations/5
+        [HttpGet("Reservations/{id}")]
+        public IActionResult Get(int id)
+        {
+            try
+            {
+                var reservation = _reservationsService.GetReservation(id);
+
+                return Ok(reservation);
+            }
+            catch (ReservationNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        // PUT: api/Restaurant/5/Reservations
         [HttpPut("Reservations/{id}")]
         public IActionResult Put(int id, [FromBody] ReservationRequestModel reservationRequest)
         {

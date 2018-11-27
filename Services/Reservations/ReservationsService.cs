@@ -47,7 +47,7 @@ namespace Services.Reservations
             var restaurant = _dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Reservations)
-                    .ThenInclude(r => r.User)
+                    .ThenInclude(r => r.Restaurant)
                 .FirstOrDefault(u => u.Id == userId);
             restaurant = restaurant ?? throw new UserNotFoundException();
 
