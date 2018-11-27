@@ -98,8 +98,6 @@ namespace Services.Reservations
 
         public ReservationDetailedModel UpdateReservation(ReservationRequestModel reservationRequest)
         {
-            ValidateReservationRequest(reservationRequest);
-
             var reservation = _dbContext.Reservations
                 .Include(r => r.ReservedTables)
                 .Include(r => r.Restaurant)
@@ -107,22 +105,22 @@ namespace Services.Reservations
                 .FirstOrDefault(r => r.Id == reservationRequest.Id);
             reservation = reservation ?? throw new ReservationNotFoundException();
 
+            // override properties that are not changeable
+            reservationRequest.UserId = reservation.UserId;
+            reservationRequest.RestaurantId = reservation.RestaurantId;
+
+            ValidateReservationRequest(reservationRequest);
+
             // check if the newly added tables are available
             var oldTableIds = reservation.ReservedTables
                 .Select(rt => rt.RestaurantTableId).ToList();
             var updatedTableIds = reservationRequest.TableIds;
 
-            var newlyAddedTableIds = updatedTableIds.Except(oldTableIds).ToList();
-
-            var oldReservedTables = reservation.ReservedTables.Select(rt => rt.Id).ToList();
-            var areTablesAvailable = _availabilityService.AreTablesAvailable(newlyAddedTableIds, reservationRequest.Range, oldReservedTables);
+            var oldTableReservations = reservation.ReservedTables.Select(rt => rt.Id).ToList();
+            var areTablesAvailable = _availabilityService.AreTablesAvailable(updatedTableIds, reservationRequest.Range, oldTableReservations);
             if (!areTablesAvailable) throw new ReservationNotAvalableException();
 
             reservation = _mapper.Map(reservationRequest, reservation);
-            
-            // restaurant and user are not updateable
-            _dbContext.Entry(reservation).Property(r => r.RestaurantId).IsModified = false;
-            _dbContext.Entry(reservation).Property(r => r.UserId).IsModified = false;
 
             _dbContext.SaveChanges();
 
@@ -150,7 +148,15 @@ namespace Services.Reservations
                 throw new TableNotFoundException();
             }
 
-            // check if the table assignation is optimal
+            // check if the number of participants could fit the table's seats
+            var availableSeatsCount = tablesFromDb.Select(t => t.Seats).Sum();
+            var areTablesFittingTheNumberOfParticipants = availableSeatsCount >= reservationRequest.ParticipantsCount;
+            if (!areTablesFittingTheNumberOfParticipants)
+            {
+                throw new TablesAreNotFittingException();
+            }
+
+            // check if the table assignation is optimal (if there could be less tables requested)
             var areTooManyTablesRequested =
                 _availabilityService.AreTooManyTablesRequested(tablesFromDb, reservationRequest.ParticipantsCount ?? 0);
             if (areTooManyTablesRequested)
