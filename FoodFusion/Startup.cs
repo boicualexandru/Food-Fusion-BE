@@ -123,6 +123,7 @@ namespace FoodFusion
             services.AddTransient<IReservationsService, ReservationsService>();
             services.AddTransient<IAvailabilityService, AvailabilityService>();
             services.AddTransient(typeof(IConcurrentEventsService<>), typeof(ConcurrentEventsService<>));
+            services.AddScoped<IAuthorizationHandler, ReservationAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
