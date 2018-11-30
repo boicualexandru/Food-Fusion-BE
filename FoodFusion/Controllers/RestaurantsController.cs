@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services.Authorization;
 using Services.Restaurants;
 using Services.Restaurants.Exceptions;
 using Services.Restaurants.Models;
 using System.Collections.Generic;
+using WebApi.ActionFilters;
 
 namespace WebApi.Controllers
 {
@@ -16,14 +16,10 @@ namespace WebApi.Controllers
     [ApiController]
     public class RestaurantsController : ControllerBase
     {
-        private readonly IResourceAuthorizationService<RestaurantAuthorizationRequirement> _authorizationService;
         private readonly IRestaurantService _restaurantService;
 
-        public RestaurantsController(
-            IResourceAuthorizationService<RestaurantAuthorizationRequirement> authorizationService,
-            IRestaurantService restaurantService)
+        public RestaurantsController(IRestaurantService restaurantService)
         {
-            _authorizationService = authorizationService;
             _restaurantService = restaurantService;
         }
 
@@ -43,12 +39,12 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Restaurants/5
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        [HttpGet("{menuId}")]
+        public IActionResult Get(int menuId)
         {
             try
             {
-                var restaurant = _restaurantService.GetRestaurant(id);
+                var restaurant = _restaurantService.GetRestaurant(menuId);
                 return Ok(restaurant);
             }
             catch(RestaurantNotFoundException)
@@ -73,7 +69,7 @@ namespace WebApi.Controllers
         }
 
         // PUT: api/Restaurants/5
-        [Authorize]
+        [AuthorizeByRestaurant(roles: "Admin, Manager", key: "id")]
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] RestaurantModel restaurant)
         {
@@ -84,13 +80,6 @@ namespace WebApi.Controllers
 
             try
             {
-                var isAuthorized = _authorizationService
-                   .WithUser(User)
-                   .WithRequirement(RestaurantOperations.Edit)
-                   .WithResource(id)
-                   .IsAuthorized();
-                if (!isAuthorized) return Forbid();
-
                 restaurant.Id = id;
                 _restaurantService.UpdateRestaurant(restaurant);
                 return Ok(restaurant);
