@@ -15,6 +15,10 @@ namespace Services.Restaurants.Mappers
             CreateMap<Restaurant, RestaurantDetailedModel>();
             CreateMap<RestaurantDetailedModel, Restaurant>()
                 .ForMember(restaurant => restaurant.Id, opt => opt.Ignore());
+
+            CreateMap<Restaurant, RestaurantSimpleModel>();
+            CreateMap<RestaurantSimpleModel, Restaurant>()
+                .ForMember(restaurant => restaurant.Id, opt => opt.Ignore());
         }
     }
 }

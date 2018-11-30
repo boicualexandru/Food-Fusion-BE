@@ -86,7 +86,7 @@ namespace WebApi.Controllers
             {
                 var isAuthorized = _authorizationService
                    .WithUser(User)
-                   .WithRequirement(Operations<RestaurantAuthorizationRequirement>.Update)
+                   .WithRequirement(RestaurantOperations.Edit)
                    .WithResource(id)
                    .IsAuthorized();
                 if (!isAuthorized) return Forbid();

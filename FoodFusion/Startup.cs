@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Common.ConcurrentEvents;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +26,7 @@ using Services.Authentication.Models;
 using Services.Authorization;
 using Services.Employees;
 using Services.Menus;
+using Services.Reservations;
 using Services.Restaurants;
 using Swashbuckle.AspNetCore.Swagger;
 using WebApi.Middlewares;
@@ -117,6 +119,11 @@ namespace FoodFusion
 
             services.AddTransient<IEmployeesService, EmployeesService>();
             services.AddScoped<IAuthorizationHandler, EmployeeAuthorizationHandler>();
+
+            services.AddTransient<IReservationsService, ReservationsService>();
+            services.AddTransient<IAvailabilityService, AvailabilityService>();
+            services.AddTransient(typeof(IConcurrentEventsService<>), typeof(ConcurrentEventsService<>));
+            services.AddScoped<IAuthorizationHandler, ReservationAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

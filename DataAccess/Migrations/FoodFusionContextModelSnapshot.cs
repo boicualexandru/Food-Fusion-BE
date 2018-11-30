@@ -77,6 +77,8 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("RestaurantId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Reservations");
                 });
 
@@ -229,6 +231,11 @@ namespace DataAccess.Migrations
                     b.HasOne("DataAccess.Models.Restaurant", "Restaurant")
                         .WithMany("Reservations")
                         .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DataAccess.Models.User", "User")
+                        .WithMany("Reservations")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -32,13 +32,6 @@ namespace Services.Restaurants
                                                        RestaurantAuthorizationRequirement requirement,
                                                        int restaurantId = 0)
         {
-            // Grant read for all
-            if(requirement.Name == Operations<RestaurantAuthorizationRequirement>.Read.Name)
-            {
-                context.Succeed(requirement);
-                return Task.CompletedTask;
-            }
-
             // Grant all rights for Admin
             var isAdmin = context.User.IsInRole(UserRole.Admin.ToString());
             if (isAdmin)
@@ -47,7 +40,7 @@ namespace Services.Restaurants
                 return Task.CompletedTask;
             }
 
-            if(requirement.Name != Operations<RestaurantAuthorizationRequirement>.Update.Name)
+            if(requirement.Name != RestaurantOperations.Edit.Name)
             {
                 context.Fail();
                 return Task.CompletedTask;
@@ -77,4 +70,18 @@ namespace Services.Restaurants
 
     public class RestaurantAuthorizationRequirement : OperationAuthorizationRequirement { }
     //public abstract class RestaurantOperations : Operations<RestaurantAuthorizationRequirement> { }
+
+    public static class RestaurantOperations
+    {
+        public static RestaurantAuthorizationRequirement Edit =
+            new RestaurantAuthorizationRequirement { Name = nameof(Edit) };
+        public static RestaurantAuthorizationRequirement Delete =
+            new RestaurantAuthorizationRequirement { Name = nameof(Delete) };
+        public static RestaurantAuthorizationRequirement ReadEmployees =
+            new RestaurantAuthorizationRequirement { Name = nameof(ReadEmployees) };
+        public static RestaurantAuthorizationRequirement ManageEmployees =
+            new RestaurantAuthorizationRequirement { Name = nameof(ManageEmployees) };
+        public static RestaurantAuthorizationRequirement ManageReservations =
+            new RestaurantAuthorizationRequirement { Name = nameof(ManageReservations) };
+    }
 }
