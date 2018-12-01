@@ -39,12 +39,12 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Restaurants/5
-        [HttpGet("{menuId}")]
-        public IActionResult Get(int menuId)
+        [HttpGet("{restaurantId}")]
+        public IActionResult Get(int restaurantId)
         {
             try
             {
-                var restaurant = _restaurantService.GetRestaurant(menuId);
+                var restaurant = _restaurantService.GetRestaurant(restaurantId);
                 return Ok(restaurant);
             }
             catch(RestaurantNotFoundException)

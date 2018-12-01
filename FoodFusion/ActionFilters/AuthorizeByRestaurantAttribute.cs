@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Services.Authentication.Models;
 using System;
@@ -7,7 +8,7 @@ using System.Security.Claims;
 
 namespace WebApi.ActionFilters
 {
-    public class AuthorizeByRestaurantAttribute : Attribute, IResourceFilter
+    public class AuthorizeByRestaurantAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
         protected readonly string[] _roles;
         protected readonly string _key;
@@ -24,9 +25,11 @@ namespace WebApi.ActionFilters
             _key = key;
         }
 
-        public void OnResourceExecuting(ResourceExecutingContext context)
+        public void OnAuthorization(AuthorizationFilterContext context)
         {
             _user = context.HttpContext.User;
+
+            if (!_user.Identity.IsAuthenticated) return;
 
             var requireAdmin = _roles.Contains("Admin");
             if (requireAdmin)
@@ -58,8 +61,6 @@ namespace WebApi.ActionFilters
             
             context.Result = new ForbidResult();
         }
-
-        public void OnResourceExecuted(ResourceExecutedContext context) { }
 
         protected virtual string GetRestaurantId(string keyValue) => keyValue;
 
