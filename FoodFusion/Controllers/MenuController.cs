@@ -33,7 +33,7 @@ namespace WebApi.Controllers
         }
 
         // POST: api/Restaurants/5/Menu
-        [AuthorizeByRestaurant(roles: "Admin, Manager")]
+        [AuthorizeByRestaurant(roles: "Manager")]
         [HttpPost("{restaurantId}/[controller]")]
         public IActionResult Post(int restaurantId, [FromBody] MenuModel menu)
         {
@@ -47,7 +47,7 @@ namespace WebApi.Controllers
         }
 
         // DELETE: api/Restaurants/5/Menu
-        [AuthorizeByRestaurant(roles: "Admin, Manager")]
+        [AuthorizeByRestaurant(roles: "Manager")]
         [HttpDelete("{restaurantId}/[controller]")]
         public IActionResult Delete(int restaurantId)
         {
@@ -63,7 +63,7 @@ namespace WebApi.Controllers
         }
 
         // POST: api/Restaurants/Menu/5/Items
-        [AuthorizeByMenu(roles: "Admin, Manager")]
+        [AuthorizeByMenu(roles: "Manager")]
         [HttpPost("[controller]/{menuId}/Items")]
         public IActionResult PostItem(int menuId, [FromBody] MenuItemModel item)
         {
@@ -84,7 +84,7 @@ namespace WebApi.Controllers
         }
 
         // PUT: api/Restaurants/Menu/Items/5
-        [AuthorizeByMenuItem(roles: "Admin, Manager")]
+        [AuthorizeByMenuItem(roles: "Manager")]
         [HttpPut("[controller]/Items/{itemId}")]
         public IActionResult UpdateItem(int itemId, [FromBody] MenuItemModel item)
         {
@@ -106,7 +106,7 @@ namespace WebApi.Controllers
         }
 
         // DELETE: api/Restaurants/Menu/Items/5
-        [AuthorizeByMenuItem(roles: "Admin, Manager")]
+        [AuthorizeByMenuItem(roles: "Manager")]
         [HttpDelete("[controller]/Items/{itemId}")]
         public IActionResult DeleteItem(int itemId)
         {

@@ -20,7 +20,7 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Restaurants/5/Employees
-        [AuthorizeByRestaurant(roles: "Admin, Manager, Employee")]
+        [AuthorizeByRestaurant(roles: "Employee")]
         [HttpGet("Employees")]
         public IActionResult GetEmployees(int restaurantId)
         {
@@ -29,7 +29,7 @@ namespace WebApi.Controllers
         }
 
         // POST: api/Restaurants/5/Employees
-        [AuthorizeByRestaurant(roles: "Admin, Manager")]
+        [AuthorizeByRestaurant(roles: "Manager")]
         [HttpPost("Employees")]
         public IActionResult PostEmployee(int restaurantId, [FromBody] int userId)
         {
@@ -38,7 +38,7 @@ namespace WebApi.Controllers
         }
 
         // DELETE: api/Restaurants/5/Employees/3
-        [AuthorizeByRestaurant(roles: "Admin, Manager")]
+        [AuthorizeByRestaurant(roles: "Manager")]
         [HttpDelete("Employees/{userId}")]
         public IActionResult DeleteEmployee(int restaurantId, int userId)
         {
@@ -54,7 +54,7 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Restaurants/5/Manager
-        [AuthorizeByRestaurant(roles: "Admin, Manager, Employee")]
+        [AuthorizeByRestaurant(roles: "Employee")]
         [HttpGet("Manager")]
         public IActionResult GetManager(int restaurantId)
         {
@@ -70,7 +70,7 @@ namespace WebApi.Controllers
         }
 
         // POST: api/Restaurants/5/Manager
-        [AuthorizeByRestaurant(roles: "Admin, Manager")]
+        [AuthorizeByRestaurant(roles: "Manager")]
         [HttpPost("Manager")]
         public IActionResult PostManager(int restaurantId, [FromBody] int userId)
         {

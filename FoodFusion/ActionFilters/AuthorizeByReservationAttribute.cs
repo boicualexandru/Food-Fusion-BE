@@ -9,16 +9,16 @@ namespace WebApi.ActionFilters
 {
     public class AuthorizeByReservationAttribute : TypeFilterAttribute
     {
-        public AuthorizeByReservationAttribute(string roles, string key = "reservationId") : base(typeof(AuthorizeByReservationFilter))
+        public AuthorizeByReservationAttribute(string roles = null, string reqRoles = null, string key = "reservationId") : base(typeof(AuthorizeByReservationFilter))
         {
-            Arguments = new object[] { roles, key };
+            Arguments = new object[] { roles, reqRoles, key };
         }
 
         private class AuthorizeByReservationFilter : AuthorizeByRestaurantAttribute
         {
             private readonly FoodFusionContext _dbContext;
 
-            public AuthorizeByReservationFilter(FoodFusionContext dbContext, string roles, string key) : base(roles, key)
+            public AuthorizeByReservationFilter(FoodFusionContext dbContext, string roles, string reqRoles, string key) : base(roles, reqRoles, key)
             {
                 _dbContext = dbContext;
             }

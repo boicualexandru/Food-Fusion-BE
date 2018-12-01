@@ -19,9 +19,25 @@ namespace WebApi.ActionFilters
 
         public AuthorizeByRestaurantAttribute() { }
 
-        public AuthorizeByRestaurantAttribute(string roles, string key = "restaurantId")
+        public AuthorizeByRestaurantAttribute(string reqRoles = null, string roles = null, string key = "restaurantId")
         {
-            _roles = roles.Split(',').Select(r => r.Trim()).ToArray();
+            if (reqRoles != null && roles != null) throw new InvalidOperationException();
+
+            if(reqRoles != null)
+            {
+                _roles = reqRoles.Split(',').Select(r => r.Trim()).ToArray();
+            }
+
+            if (roles != null)
+            {
+                var rolesList = roles.Split(',').Select(r => r.Trim()).ToList();
+
+                if (rolesList.Contains(AuthUserRoles.Employee)) rolesList.Add(AuthUserRoles.Manager);
+                if (rolesList.Contains(AuthUserRoles.Manager)) rolesList.Add(AuthUserRoles.Admin);
+
+                _roles = rolesList.ToArray();
+            }
+
             _key = key;
         }
 
@@ -31,17 +47,17 @@ namespace WebApi.ActionFilters
 
             if (!_user.Identity.IsAuthenticated) return;
 
-            var requireAdmin = _roles.Contains("Admin");
+            var requireAdmin = _roles.Contains(AuthUserRoles.Admin);
             if (requireAdmin)
             {
-                var hasAdminRole = _user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+                var hasAdminRole = _user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == AuthUserRoles.Admin);
                 if (hasAdminRole) return;
             }
             
             var keyValue = context.RouteData.Values[_key].ToString();
             _restaurantId = GetRestaurantId(keyValue);
 
-            var requireManager = _roles.Contains("Manager");
+            var requireManager = _roles.Contains(AuthUserRoles.Manager);
             if (requireManager)
             {
                 var isManagerForThisRestaurant = context.HttpContext
@@ -49,7 +65,7 @@ namespace WebApi.ActionFilters
                 if (isManagerForThisRestaurant) return;
             }
 
-            var requireEmployee = _roles.Contains("Employee");
+            var requireEmployee = _roles.Contains(AuthUserRoles.Employee);
             if (requireEmployee)
             {
                 var isEmployeeForThisRestaurant = context.HttpContext

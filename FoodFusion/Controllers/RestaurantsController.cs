@@ -69,7 +69,7 @@ namespace WebApi.Controllers
         }
 
         // PUT: api/Restaurants/5
-        [AuthorizeByRestaurant(roles: "Admin, Manager", key: "id")]
+        [AuthorizeByRestaurant(roles: "Manager", key: "id")]
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] RestaurantModel restaurant)
         {

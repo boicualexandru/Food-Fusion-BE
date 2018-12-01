@@ -3,7 +3,6 @@ using System.Security.Claims;
 using Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Authorization;
 using Services.Authorization.Exceptions;
 using Services.Reservations;
 using Services.Reservations.Exceptions;
@@ -63,7 +62,7 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Restaurant/5/Reservations
-        [AuthorizeByRestaurant(roles: "Admin, Manager, Employee")]
+        [AuthorizeByRestaurant(roles: "Employee")]
         [HttpGet("Restaurant/{restaurantId}/Reservations")]
         public IActionResult GetRestaurantReservations(int restaurantId)
         {
@@ -86,7 +85,7 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Reservations/5
-        [AuthorizeByReservation(roles: "Admin, Manager, Employee, Owner")]
+        [AuthorizeByReservation(roles: "Employee, Owner")]
         [HttpGet("Reservations/{id}")]
         public IActionResult Get(int id)
         {
@@ -103,7 +102,7 @@ namespace WebApi.Controllers
         }
 
         // PUT: api/Restaurant/5/Reservations
-        [AuthorizeByReservation(roles: "Admin, Manager, Employee, Owner")]
+        [AuthorizeByReservation(roles: "Employee, Owner")]
         [HttpPut("Reservations/{id}")]
         public IActionResult Put(int id, [FromBody] ReservationRequestModel reservationRequest)
         {
@@ -123,7 +122,7 @@ namespace WebApi.Controllers
         }
 
         // DELETE: api/Reservations/5
-        [AuthorizeByReservation(roles: "Admin, Manager, Employee, Owner")]
+        [AuthorizeByReservation(roles: "Employee, Owner")]
         [HttpDelete("Reservations/{id}")]
         public IActionResult Delete(int id)
         {

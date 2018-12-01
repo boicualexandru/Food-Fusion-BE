@@ -7,16 +7,16 @@ namespace WebApi.ActionFilters
 {
     public class AuthorizeByMenuAttribute : TypeFilterAttribute
     {
-        public AuthorizeByMenuAttribute(string roles, string key = "menuId") : base(typeof(AuthorizeByMenuFilter))
+        public AuthorizeByMenuAttribute(string roles = null, string reqRoles = null, string key = "menuId") : base(typeof(AuthorizeByMenuFilter))
         {
-            Arguments = new object[] { roles, key };
+            Arguments = new object[] { roles, reqRoles, key };
         }
 
         private class AuthorizeByMenuFilter : AuthorizeByRestaurantAttribute
         {
             private readonly FoodFusionContext _dbContext;
 
-            public AuthorizeByMenuFilter(FoodFusionContext dbContext, string roles, string key) : base(roles, key)
+            public AuthorizeByMenuFilter(FoodFusionContext dbContext, string roles, string reqRoles, string key) : base(roles, reqRoles, key)
             {
                 _dbContext = dbContext;
             }
