@@ -9,41 +9,40 @@ namespace WebApi.ActionFilters
 {
     public class AuthorizeByRestaurantAttribute : Attribute, IResourceFilter
     {
-        public string Roles
-        {
-            get { return string.Join(',', _roles); }
-            set { _roles = value.Split(',').Select(r => r.Trim()).ToArray(); }
-        }
-        public string Key { get; set; }
+        protected readonly string[] _roles;
+        protected readonly string _key;
 
-        private string[] _roles;
+        protected ClaimsPrincipal _user;
+        protected string _restaurantId;
+
 
         public AuthorizeByRestaurantAttribute() { }
 
         public AuthorizeByRestaurantAttribute(string roles, string key = "restaurantId")
         {
-            Roles = roles;
-            Key = Key;
+            _roles = roles.Split(',').Select(r => r.Trim()).ToArray();
+            _key = key;
         }
 
         public void OnResourceExecuting(ResourceExecutingContext context)
         {
+            _user = context.HttpContext.User;
 
             var requireAdmin = _roles.Contains("Admin");
             if (requireAdmin)
             {
-                var hasAdminRole = context.HttpContext.User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+                var hasAdminRole = _user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
                 if (hasAdminRole) return;
             }
             
-            var keyValue = context.RouteData.Values[Key].ToString();
-            var restaurantId = GetRestaurantId(keyValue);
+            var keyValue = context.RouteData.Values[_key].ToString();
+            _restaurantId = GetRestaurantId(keyValue);
 
             var requireManager = _roles.Contains("Manager");
             if (requireManager)
             {
                 var isManagerForThisRestaurant = context.HttpContext
-                        .User.Claims.Any(c => c.Type == CustomDefinedClaimNames.ManagedRestaurant && c.Value == restaurantId);
+                        .User.Claims.Any(c => c.Type == CustomDefinedClaimNames.ManagedRestaurant && c.Value == _restaurantId);
                 if (isManagerForThisRestaurant) return;
             }
 
@@ -51,9 +50,11 @@ namespace WebApi.ActionFilters
             if (requireEmployee)
             {
                 var isEmployeeForThisRestaurant = context.HttpContext
-                        .User.Claims.Any(c => c.Type == CustomDefinedClaimNames.EmployeeOfRestaurant && c.Value == restaurantId);
+                        .User.Claims.Any(c => c.Type == CustomDefinedClaimNames.EmployeeOfRestaurant && c.Value == _restaurantId);
                 if (isEmployeeForThisRestaurant) return;
             }
+
+            if (AuthorizeAdditionalRoles()) return;
             
             context.Result = new ForbidResult();
         }
@@ -61,5 +62,7 @@ namespace WebApi.ActionFilters
         public void OnResourceExecuted(ResourceExecutedContext context) { }
 
         protected virtual string GetRestaurantId(string keyValue) => keyValue;
+
+        protected virtual bool AuthorizeAdditionalRoles() => false;
     }
 }
