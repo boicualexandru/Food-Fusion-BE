@@ -10,13 +10,6 @@ namespace FoodFusion.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        private readonly IResourceAuthorizationService<RestaurantAuthorizationRequirement> _authorizationService;
-
-        public ValuesController(IResourceAuthorizationService<RestaurantAuthorizationRequirement> authorizationService)
-        {
-            _authorizationService = authorizationService;
-        }
-
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -36,13 +29,6 @@ namespace FoodFusion.Controllers
             //{
             //    return Forbid();
             //}
-
-            var isAuthorized = _authorizationService
-                .WithUser(User)
-                .WithRequirement(Operations<RestaurantAuthorizationRequirement>.Create)
-                .WithResource(id)
-                .IsAuthorized();
-            if (!isAuthorized) return Forbid();
 
             return "value";
         }
