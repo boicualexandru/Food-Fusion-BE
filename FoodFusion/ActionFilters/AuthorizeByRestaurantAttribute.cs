@@ -14,16 +14,16 @@ namespace WebApi.ActionFilters
             get { return string.Join(',', _roles); }
             set { _roles = value.Split(',').Select(r => r.Trim()).ToArray(); }
         }
-        public string Key { get; set; } = "restaurantId";
+        public string Key { get; set; }
 
         private string[] _roles;
 
         public AuthorizeByRestaurantAttribute() { }
 
-        public AuthorizeByRestaurantAttribute(string roles, string key = null)
+        public AuthorizeByRestaurantAttribute(string roles, string key = "restaurantId")
         {
             Roles = roles;
-            Key = key ?? Key;
+            Key = Key;
         }
 
         public void OnResourceExecuting(ResourceExecutingContext context)
