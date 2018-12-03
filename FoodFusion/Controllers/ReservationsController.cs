@@ -3,11 +3,11 @@ using System.Security.Claims;
 using Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Authorization;
 using Services.Authorization.Exceptions;
 using Services.Reservations;
 using Services.Reservations.Exceptions;
 using Services.Reservations.Models;
+using WebApi.ActionFilters;
 
 namespace WebApi.Controllers
 {
@@ -16,16 +16,13 @@ namespace WebApi.Controllers
     [ApiController]
     public class ReservationsController : ControllerBase
     {
-        private readonly IResourceAuthorizationService<ReservationAuthorizationRequirement> _reservationAuthorizationService;
         private readonly IReservationsService _reservationsService;
         private readonly IAvailabilityService _availabilityService;
 
         public ReservationsController(
-            IResourceAuthorizationService<ReservationAuthorizationRequirement> reservationAuthorizationService,
             IReservationsService reservationsService, 
             IAvailabilityService availabilityService)
         {
-            _reservationAuthorizationService = reservationAuthorizationService;
             _reservationsService = reservationsService;
             _availabilityService = availabilityService;
         }
@@ -65,7 +62,7 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Restaurant/5/Reservations
-        [Authorize]
+        [AuthorizeByRestaurant(roles: "Employee")]
         [HttpGet("Restaurant/{restaurantId}/Reservations")]
         public IActionResult GetRestaurantReservations(int restaurantId)
         {
@@ -88,17 +85,10 @@ namespace WebApi.Controllers
         }
 
         // GET: api/Reservations/5
-        [Authorize]
+        [AuthorizeByReservation(roles: "Employee, Owner")]
         [HttpGet("Reservations/{id}")]
         public IActionResult Get(int id)
         {
-            var isAuthorized = _reservationAuthorizationService
-                .WithUser(User)
-                .WithRequirement(Operations<ReservationAuthorizationRequirement>.Read)
-                .WithResource(id)
-                .IsAuthorized();
-            if (!isAuthorized) return Forbid();
-
             try
             {
                 var reservation = _reservationsService.GetReservation(id);
@@ -112,17 +102,10 @@ namespace WebApi.Controllers
         }
 
         // PUT: api/Restaurant/5/Reservations
-        [Authorize]
+        [AuthorizeByReservation(roles: "Employee, Owner")]
         [HttpPut("Reservations/{id}")]
         public IActionResult Put(int id, [FromBody] ReservationRequestModel reservationRequest)
         {
-            var isAuthorized = _reservationAuthorizationService
-                .WithUser(User)
-                .WithRequirement(Operations<ReservationAuthorizationRequirement>.Update)
-                .WithResource(id)
-                .IsAuthorized();
-            if (!isAuthorized) return Forbid();
-
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             reservationRequest.Id = id;
@@ -139,17 +122,10 @@ namespace WebApi.Controllers
         }
 
         // DELETE: api/Reservations/5
-        [Authorize]
+        [AuthorizeByReservation(roles: "Employee, Owner")]
         [HttpDelete("Reservations/{id}")]
         public IActionResult Delete(int id)
         {
-            var isAuthorized = _reservationAuthorizationService
-                .WithUser(User)
-                .WithRequirement(Operations<ReservationAuthorizationRequirement>.Delete)
-                .WithResource(id)
-                .IsAuthorized();
-            if (!isAuthorized) return Forbid();
-
             try
             {
                 _reservationsService.RemoveReservation(id);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -96,7 +97,7 @@ namespace Services.Authentication
 
         private string GetToken(User user)
         {
-            var claims = new Claim[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
@@ -106,6 +107,18 @@ namespace Services.Authentication
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
             };
 
+            var managedRestaurantIds = GetManagedRestaurantIds(user.Id);
+            foreach (var restaurantId in managedRestaurantIds)
+            {
+                claims.Add(new Claim(CustomDefinedClaimNames.ManagedRestaurant, restaurantId.ToString()));
+            }
+
+            var employeeOfRestaurantIds = GetEmployeeOfRestaurantIds(user.Id);
+            foreach (var restaurantId in employeeOfRestaurantIds)
+            {
+                claims.Add(new Claim(CustomDefinedClaimNames.EmployeeOfRestaurant, restaurantId.ToString()));
+            }
+
             var token = new JwtSecurityToken(
                 new JwtHeader(new SigningCredentials(
                     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SymetricSecurityKey)),
@@ -113,6 +126,28 @@ namespace Services.Authentication
                 new JwtPayload(claims));
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private IList<int> GetManagedRestaurantIds(int userId)
+        {
+            var restaurantIds = _dbContext.Restaurants
+                .AsNoTracking()
+                .Where(r => r.ManagerId == userId)
+                .Select(r => r.Id)
+                .ToList();
+
+            return restaurantIds;
+        }
+
+        private IList<int> GetEmployeeOfRestaurantIds(int userId)
+        {
+            var restaurantIds = _dbContext.RestaurantEmployees
+                .AsNoTracking()
+                .Where(re => re.UserId == userId)
+                .Select(re => re.RestaurantId)
+                .ToList();
+
+            return restaurantIds;
         }
     }
 }
