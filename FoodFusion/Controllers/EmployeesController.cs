@@ -31,9 +31,9 @@ namespace WebApi.Controllers
         // POST: api/Restaurants/5/Employees
         [AuthorizeByRestaurant(roles: "Manager")]
         [HttpPost("Employees")]
-        public IActionResult PostEmployee(int restaurantId, [FromBody] int userId)
+        public IActionResult PostEmployee(int restaurantId, [FromBody] string userEmail)
         {
-            var employee = _employeesService.AddEmployee(restaurantId, userId);
+            var employee = _employeesService.AddEmployeeByEmail(restaurantId, userEmail);
             return Ok(employee);
         }
 

@@ -61,6 +61,32 @@ namespace Services.Employees
             return _mapper.Map<EmployeeModel>(user);
         }
 
+        public EmployeeModel AddEmployeeByEmail(int restaurantId, string userEmail)
+        {
+            var restaurantExists = _dbContext.Restaurants
+                .Any(r => r.Id == restaurantId);
+            if (!restaurantExists) throw new RestaurantNotFoundException();
+
+            var user = _dbContext.Users
+                .FirstOrDefault(u => u.Email == userEmail);
+            user = user ?? throw new UserNotFoundException();
+
+            var employeExists = _dbContext.RestaurantEmployees
+                .Any(re => re.RestaurantId == restaurantId && re.UserId == user.Id);
+            if (employeExists) throw new EmployeeAlreadyExistsException();
+
+            var employee = new RestaurantEmployee
+            {
+                RestaurantId = restaurantId,
+                UserId = user.Id
+            };
+
+            _dbContext.RestaurantEmployees.Add(employee);
+            _dbContext.SaveChanges();
+
+            return _mapper.Map<EmployeeModel>(user);
+        }
+
         public void RemoveEmployee(int restaurantId, int userId)
         {
             var employe = _dbContext.RestaurantEmployees
