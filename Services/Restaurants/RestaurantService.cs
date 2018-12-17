@@ -20,9 +20,11 @@ namespace Services.Restaurants
             _mapper = mapper;
         }
 
-        public RestaurantModel AddRestaurant(RestaurantModel restaurantModel)
+        public RestaurantModel AddRestaurant(RestaurantModel restaurantModel, int managerUserId)
         {
             var restaurant = _mapper.Map<Restaurant>(restaurantModel);
+
+            restaurant.ManagerId = managerUserId;
 
             _dbContext.Restaurants.Add(restaurant);
             _dbContext.SaveChanges();

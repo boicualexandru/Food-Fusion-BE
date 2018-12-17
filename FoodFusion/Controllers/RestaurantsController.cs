@@ -5,6 +5,7 @@ using Services.Restaurants;
 using Services.Restaurants.Exceptions;
 using Services.Restaurants.Models;
 using System.Collections.Generic;
+using System.Security.Claims;
 using WebApi.ActionFilters;
 
 namespace WebApi.Controllers
@@ -63,7 +64,11 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var createdRestaurant = _restaurantService.AddRestaurant(restaurant);
+            var currentUser = HttpContext.User;
+            var userIdClaim = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = int.Parse(userIdClaim);
+
+            var createdRestaurant = _restaurantService.AddRestaurant(restaurant, userId);
 
             return Ok(createdRestaurant);
         }
