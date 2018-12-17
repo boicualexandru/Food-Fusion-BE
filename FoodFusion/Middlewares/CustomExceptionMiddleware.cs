@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace WebApi.Middlewares
 {
@@ -26,8 +28,12 @@ namespace WebApi.Middlewares
             {
                 httpContext.Response.Clear();
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                httpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
-                await httpContext.Response.WriteAsync(ex.Message);
+                var validationError = new Dictionary<string, string>();
+                validationError.Add("", ex.Message);
+
+                await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(validationError));
             }
         }
     }
