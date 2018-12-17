@@ -28,6 +28,7 @@ namespace WebApi.Middlewares
             {
                 httpContext.Response.Clear();
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                httpContext.Response.ContentType = "application/json";
                 httpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
                 var validationError = new Dictionary<string, string>();
