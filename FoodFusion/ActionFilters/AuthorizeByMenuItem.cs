@@ -7,7 +7,7 @@ namespace WebApi.ActionFilters
 {
     public class AuthorizeByMenuItemAttribute : TypeFilterAttribute
     {
-        public AuthorizeByMenuItemAttribute(string roles = null, string reqRoles = null, string key = "itemId") : base(typeof(AuthorizeByMenuItemFilter))
+        public AuthorizeByMenuItemAttribute(string roles = "", string reqRoles = "", string key = "itemId") : base(typeof(AuthorizeByMenuItemFilter))
         {
             Arguments = new object[] { roles, reqRoles, key };
         }

@@ -19,8 +19,11 @@ namespace WebApi.ActionFilters
 
         public AuthorizeByRestaurantAttribute() { }
 
-        public AuthorizeByRestaurantAttribute(string reqRoles = null, string roles = null, string key = "restaurantId")
+        public AuthorizeByRestaurantAttribute(string reqRoles = "", string roles = "", string key = "restaurantId")
         {
+            if (string.IsNullOrEmpty(reqRoles)) reqRoles = null;
+            if (string.IsNullOrEmpty(roles)) roles = null;
+
             if (reqRoles != null && roles != null) throw new InvalidOperationException();
 
             if(reqRoles != null)
@@ -45,7 +48,11 @@ namespace WebApi.ActionFilters
         {
             _user = context.HttpContext.User;
 
-            if (!_user.Identity.IsAuthenticated) return;
+            if (!_user.Identity.IsAuthenticated)
+            {
+                context.Result = new UnauthorizedResult();
+                return;
+            }
 
             var requireAdmin = _roles.Contains(AuthUserRoles.Admin);
             if (requireAdmin)

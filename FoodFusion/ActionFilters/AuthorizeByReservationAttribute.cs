@@ -9,7 +9,7 @@ namespace WebApi.ActionFilters
 {
     public class AuthorizeByReservationAttribute : TypeFilterAttribute
     {
-        public AuthorizeByReservationAttribute(string roles = null, string reqRoles = null, string key = "reservationId") : base(typeof(AuthorizeByReservationFilter))
+        public AuthorizeByReservationAttribute(string roles = "", string reqRoles = "", string key = "reservationId") : base(typeof(AuthorizeByReservationFilter))
         {
             Arguments = new object[] { roles, reqRoles, key };
         }
