@@ -43,8 +43,8 @@ namespace Services.Reservations
             }
 
             // TODO: improve this to be done in one query
-            bool isReservationInRange(Reservation res) => res.EndTime > timeRange.Start ||
-                    res.StartTime > timeRange.End;
+            bool isReservationInRange(Reservation res) => res.StartTime < timeRange.End &&
+                    res.EndTime > timeRange.Start;
 
             var reservations = _dbContext.Reservations
                 .AsNoTracking()
