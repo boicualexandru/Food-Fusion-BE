@@ -140,9 +140,11 @@ namespace Services.Reservations
             var tablesFromDb = _dbContext.RestaurantTables
                 .Include(t => t.Map)
                 .Where(t => reservationRequest.TableIds.Contains(t.Id))
+                .Where(t => t.Map.RestaurantId == reservationRequest.RestaurantId)
                 .ToList();
 
             // check that all the tables are present in the DB
+            // check that the tables are belonging to this restaurant
             if (reservationRequest.TableIds.Count != tablesFromDb.Count)
             {
                 throw new TableNotFoundException();
@@ -164,14 +166,6 @@ namespace Services.Reservations
                 throw new TooManyTablesRequestedException();
             }
 
-            // check that the tables are belonging to this restaurant
-            var doTablesBelongToThisRestaurant = tablesFromDb
-                .All(t => t.Map.RestaurantId == reservationRequest.RestaurantId);
-
-            if (!doTablesBelongToThisRestaurant)
-            {
-                throw new TableNotFoundException();
-            }
         }
     }
 }
