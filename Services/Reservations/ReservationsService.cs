@@ -76,6 +76,8 @@ namespace Services.Reservations
 
             _dbContext.Entry(reservation).Reference(p => p.Restaurant).Load();
             _dbContext.Entry(reservation).Reference(p => p.User).Load();
+            _dbContext.Entry(reservation).Collection(p => p.ReservedTables)
+                .Query().Include(rt => rt.Table).Load();
 
             return _mapper.Map<ReservationDetailedModel>(reservation);
         }
