@@ -56,10 +56,18 @@ namespace Services.Reservations
 
         public ReservationDetailedModel AddReservation(ReservationRequestModel reservationRequest)
         {
-            ValidateReservationRequest(reservationRequest);
+            if(reservationRequest.TableIds?.Count > 0)
+            {
+                ValidateReservationRequest(reservationRequest);
 
-            var areTablesAvailable = _availabilityService.AreTablesAvailable(reservationRequest.TableIds, reservationRequest.Range);
-            if (!areTablesAvailable) throw new ReservationNotAvalableException();
+                var areTablesAvailable = _availabilityService.AreTablesAvailable(reservationRequest.TableIds, reservationRequest.Range);
+                if (!areTablesAvailable) throw new ReservationNotAvailableException();
+            }
+            else
+            {
+                var mostFitTableId = GetMostFitTableId(reservationRequest);
+                reservationRequest.TableIds = new List<int> { mostFitTableId };
+            }
 
             var reservation = _mapper.Map<Reservation>(reservationRequest);
 
@@ -118,7 +126,7 @@ namespace Services.Reservations
 
             var oldTableReservations = reservation.ReservedTables.Select(rt => rt.Id).ToList();
             var areTablesAvailable = _availabilityService.AreTablesAvailable(updatedTableIds, reservationRequest.Range, oldTableReservations);
-            if (!areTablesAvailable) throw new ReservationNotAvalableException();
+            if (!areTablesAvailable) throw new ReservationNotAvailableException();
 
             reservation = _mapper.Map(reservationRequest, reservation);
 
@@ -166,6 +174,21 @@ namespace Services.Reservations
                 throw new TooManyTablesRequestedException();
             }
 
+        }
+
+
+        //todo Add functionality for multiple tables. The returning type should be an array of tableIds that will be assigned to the reservation
+        private int GetMostFitTableId(ReservationRequestModel reservationRequest)
+        {
+            var availableTables = _availabilityService.GetAvailableTables(reservationRequest.RestaurantId,
+                reservationRequest.Range,
+                reservationRequest.ParticipantsCount ?? 0);
+
+            var minimumTableSeatsAvailable = availableTables.Min(t => t.Seats);
+
+            var mostFittingTable = availableTables.FirstOrDefault(t => t.Seats == minimumTableSeatsAvailable);
+
+            return mostFittingTable.Id;
         }
     }
 }

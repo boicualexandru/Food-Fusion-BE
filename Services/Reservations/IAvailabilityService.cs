@@ -11,5 +11,7 @@ namespace Services.Reservations
         bool AreTablesAvailable(IList<int> tableIds, TimeRange range, IList<int> reservedTableidsToExclude = null);
 
         bool AreTooManyTablesRequested(IList<RestaurantTable> tables, int participantsCount);
+
+        IList<RestaurantTable> GetAvailableTables(int restaunrantId, TimeRange range, int participantsCount);
     }
 }

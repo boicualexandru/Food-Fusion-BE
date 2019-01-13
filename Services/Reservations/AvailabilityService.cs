@@ -148,5 +148,23 @@ namespace Services.Reservations
             var isAnyTableFit = tables.Any(t => t.Seats >= participantsCount);
             return isAnyTableFit;
         }
+
+        public IList<RestaurantTable> GetAvailableTables(int restaunrantId, TimeRange range, int participantsCount)
+        {
+            var restaurantTables = _dbContext.RestaurantTables
+                .AsNoTracking()
+                .Include(t => t.Map)
+                .Include(t => t.ReservedTables)
+                    .ThenInclude(rt => rt.Reservation)
+                .Where(rt => rt.Map.RestaurantId == restaunrantId);
+
+            var fittingTables = restaurantTables.Where(t => t.Seats >= participantsCount);
+
+            var availableTables = fittingTables
+                .Where(t => !t.ReservedTables
+                    .Any(rt => rt.Reservation.StartTime < range.End && rt.Reservation.EndTime > range.Start));
+
+            return availableTables.ToList();
+        }
     }
 }
