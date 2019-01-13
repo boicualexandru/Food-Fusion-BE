@@ -12,8 +12,6 @@ namespace Services.Reservations.Models
 
         public UserSimpleModel User { get; set; }
 
-        public string UserFullName { get; set; }
-
         public int ParticipantsCount { get; set; }
 
         public TimeRange Range { get; set; }
