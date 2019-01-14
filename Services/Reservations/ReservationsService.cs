@@ -30,28 +30,34 @@ namespace Services.Reservations
             _availabilityService = availabilityService;
         }
 
-        public IList<ReservationModel> GetRestaurantReservations(int restaurantId)
+        public IList<ReservationDetailedModel> GetRestaurantReservations(int restaurantId)
         {
             var restaurant = _dbContext.Restaurants
                 .AsNoTracking()
                 .Include(r => r.Reservations)
                     .ThenInclude(r => r.User)
+                .Include(r => r.Reservations)
+                    .ThenInclude(r => r.ReservedTables)
+                        .ThenInclude(rt => rt.Table)
                 .FirstOrDefault(r => r.Id == restaurantId);
             restaurant = restaurant ?? throw new RestaurantNotFoundException();
 
-            return _mapper.Map<IList<ReservationModel>>(restaurant.Reservations);
+            return _mapper.Map<IList<ReservationDetailedModel>>(restaurant.Reservations);
         }
 
-        public IList<ReservationModel> GetUserReservations(int userId)
+        public IList<ReservationDetailedModel> GetUserReservations(int userId)
         {
-            var restaurant = _dbContext.Users
+            var user = _dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Reservations)
                     .ThenInclude(r => r.Restaurant)
+                .Include(u => u.Reservations)
+                    .ThenInclude(r => r.ReservedTables)
+                        .ThenInclude(rt => rt.Table)
                 .FirstOrDefault(u => u.Id == userId);
-            restaurant = restaurant ?? throw new UserNotFoundException();
+            user = user ?? throw new UserNotFoundException();
 
-            return _mapper.Map<IList<ReservationModel>>(restaurant.Reservations);
+            return _mapper.Map<IList<ReservationDetailedModel>>(user.Reservations);
         }
 
         public ReservationDetailedModel AddReservation(ReservationRequestModel reservationRequest)
