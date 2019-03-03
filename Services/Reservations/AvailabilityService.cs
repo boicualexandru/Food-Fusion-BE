@@ -149,7 +149,7 @@ namespace Services.Reservations
             return isAnyTableFit;
         }
 
-        public IList<RestaurantTable> GetAvailableTables(int restaunrantId, TimeRange range, int participantsCount)
+        public IList<TableModel> GetAvailableTables(int restaunrantId, TimeRange range, int participantsCount)
         {
             var restaurantTables = _dbContext.RestaurantTables
                 .AsNoTracking()
@@ -164,7 +164,32 @@ namespace Services.Reservations
                 .Where(t => !t.ReservedTables
                     .Any(rt => rt.Reservation.StartTime < range.End && rt.Reservation.EndTime > range.Start));
 
-            return availableTables.ToList();
+            return _mapper.Map<List<TableModel>>(availableTables.ToList());
+        }
+
+        public IList<TableStatus> GetTablesStatus(int restaunrantId, TimeRange range, int participantsCount)
+        {
+            var restaurantTables = _dbContext.RestaurantTables
+                   .AsNoTracking()
+                   .Include(t => t.Map)
+                   .Include(t => t.ReservedTables)
+                       .ThenInclude(rt => rt.Reservation)
+                   .Where(rt => rt.Map.RestaurantId == restaunrantId);
+
+            var fittingTables = restaurantTables.Where(t => t.Seats >= participantsCount);
+            
+            var availableTables = fittingTables
+                .Where(t => !t.ReservedTables
+                    .Any(rt => rt.Reservation.StartTime < range.End && rt.Reservation.EndTime > range.Start));
+
+            var tablesStatus = restaurantTables
+                .Select(t => new TableStatus {
+                    Table = _mapper.Map<TableModel>(t),
+                    IsAvailable = availableTables.Contains(t)
+                })
+                .ToList();
+
+            return tablesStatus;
         }
     }
 }

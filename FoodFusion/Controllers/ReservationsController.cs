@@ -44,6 +44,23 @@ namespace WebApi.Controllers
             return Ok(unavailability);
         }
 
+        // GET: api/Restaurants/5/AvailableTables
+        [Authorize]
+        [HttpGet("Restaurants/{restaurantId}/AvailableTables")]
+        public IActionResult GetTablesUnavailability(
+            [FromRoute] int restaurantId,
+            [FromQuery] int participantsCount,
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end)
+        {
+            var timeRange = new TimeRange { Start = start, End = end };
+
+            var availableTables = _availabilityService
+                .GetAvailableTables(restaurantId, timeRange, participantsCount);
+
+            return Ok(availableTables);
+        }
+
         // POST: api/Restaurant/5/Reservations
         [Authorize]
         [HttpPost("Restaurants/{restaurantId}/Reservations")]

@@ -1,5 +1,6 @@
 ﻿using Common;
 using DataAccess.Models;
+using Services.Reservations.Models;
 using System.Collections.Generic;
 
 namespace Services.Reservations
@@ -12,6 +13,8 @@ namespace Services.Reservations
 
         bool AreTooManyTablesRequested(IList<RestaurantTable> tables, int participantsCount);
 
-        IList<RestaurantTable> GetAvailableTables(int restaunrantId, TimeRange range, int participantsCount);
+        IList<TableModel> GetAvailableTables(int restaunrantId, TimeRange range, int participantsCount);
+
+        IList<TableStatus> GetTablesStatus(int restaunrantId, TimeRange range, int participantsCount);
     }
 }

@@ -186,6 +186,7 @@ namespace Services.Reservations
 
 
         //todo Add functionality for multiple tables. The returning type should be an array of tableIds that will be assigned to the reservation
+        //todo Catch exception when there are no available tables
         private int GetMostFitTableId(ReservationRequestModel reservationRequest)
         {
             var availableTables = _availabilityService.GetAvailableTables(reservationRequest.RestaurantId,
