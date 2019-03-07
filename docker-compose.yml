@@ -1,0 +1,18 @@
+version: '3'
+services:
+  mssql:
+    image: 'microsoft/mssql-server-linux'
+    container_name: mssql
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "testtest0!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+  webapp:
+    image: 'webapi:dev'
+    depends_on:
+      - mssql
+    container_name: webapp
+    ports:
+      - "5000:3000"
