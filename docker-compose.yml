@@ -16,7 +16,8 @@ services:
     environment:
         SA_PASSWORD: "testtest0!"
         ACCEPT_EULA: "Y"
-        no_proxy: 192.168.99.100
+        MSSQL_PID: "Express"
+        # no_proxy: 192.168.99.100
   # mssql:
     # image: 'microsoft/mssql-server-linux'
     # container_name: mssql
