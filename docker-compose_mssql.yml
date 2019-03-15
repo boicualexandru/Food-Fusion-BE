@@ -5,18 +5,18 @@ services:
         context: .
         # give the complete PATH to your Dockerfile instead of a folder
         dockerfile: ./FoodFusion/Dockerfile
-    # depends_on:
-      # - db
+    depends_on:
+      - db
     ports:
       - "5000:5000"
-    # environment:
-        # no_proxy: 192.168.99.100
-  # db:
-    # image: "mcr.microsoft.com/mssql/server"
-    # environment:
-        # SA_PASSWORD: "testtest0!"
-        # ACCEPT_EULA: "Y"
-        # MSSQL_PID: "Express"
+    environment:
+        no_proxy: 192.168.99.100
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+        SA_PASSWORD: "testtest0!"
+        ACCEPT_EULA: "Y"
+        MSSQL_PID: "Express"
         # no_proxy: 192.168.99.100
   # mssql:
     # image: 'microsoft/mssql-server-linux'
