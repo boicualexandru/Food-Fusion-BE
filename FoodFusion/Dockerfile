@@ -19,3 +19,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "WebApi.dll"]
+
+ENV ASPNETCORE_URLS=http://+:5000
