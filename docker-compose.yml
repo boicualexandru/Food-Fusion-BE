@@ -8,10 +8,10 @@ services:
     # depends_on:
       # - db
     ports:
-      - "5000:5000"
-    networks:
-        vpcbr:
-            ipv4_address: 0.0.0.0
+      - "0.0.0.0:5000:5000"
+    # networks:
+    #     vpcbr:
+    #         ipv4_address: 0.0.0.0
     # environment:
         # no_proxy: 192.168.99.100
   # db:
