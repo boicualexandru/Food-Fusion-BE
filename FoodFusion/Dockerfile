@@ -18,6 +18,7 @@ RUN dotnet publish "WebApi.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "WebApi.dll"]
 
-ENV ASPNETCORE_URLS=http://+:5000
+EXPOSE 5000/tcp
+
+ENTRYPOINT ["dotnet", "WebApi.dll", "--server.urls", "http://0.0.0.0:5000"]
