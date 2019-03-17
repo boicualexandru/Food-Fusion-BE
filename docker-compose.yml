@@ -7,8 +7,8 @@ services:
         dockerfile: ./FoodFusion/Dockerfile
     # depends_on:
       # - db
-    # ports:
-      # - "80:80"
+    ports:
+      - "80:80"
     # networks:
     #     vpcbr:
     #         ipv4_address: 0.0.0.0
