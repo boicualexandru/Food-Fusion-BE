@@ -25,6 +25,7 @@ namespace Services.Restaurants
             var restaurant = _mapper.Map<Restaurant>(restaurantModel);
 
             restaurant.ManagerId = managerUserId;
+            restaurant.Menu = new Menu();
 
             _dbContext.Restaurants.Add(restaurant);
             _dbContext.SaveChanges();
