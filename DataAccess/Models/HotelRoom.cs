@@ -25,5 +25,6 @@ namespace DataAccess.Models
 
 
         public virtual ICollection<HotelRoomFeature> RoomFeatures { get; set; }
+        public virtual ICollection<HotelRoomReservation> Reservations { get; set; }
     }
 }
