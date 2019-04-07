@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AutoMapper;
+using Common;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using Services.Hotel.Exceptions;
 using Services.Hotel.Models;
 
 namespace Services.Hotel
@@ -50,6 +52,10 @@ namespace Services.Hotel
 
                 if(filters.TimeRange != null)
                 {
+                    // correction for dates containing time
+                    filters.TimeRange.Start = filters.TimeRange.Start.Date;
+                    filters.TimeRange.End = filters.TimeRange.End.Date;
+
                     hotelRooms = hotelRooms.Where(r => r.Reservations
                         .All(res => res.EndTime <= filters.TimeRange.Start || res.StartTime >= filters.TimeRange.End));
                 }
@@ -58,6 +64,44 @@ namespace Services.Hotel
             var hotelRoomsList = hotelRooms.ToList();
 
             return _mapper.Map<IList<HotelRoomModel>>(hotelRoomsList);
+        }
+
+        public void BookRoom(HotelRoomBookingModel bookingDetails)
+        {
+            bookingDetails = bookingDetails ?? throw new HotelBookingInvalidDetailesException();
+
+            var room = _dbContext.HotelRooms
+                .Include(r => r.Reservations)
+                .FirstOrDefault(r => r.Id == bookingDetails.RoomId)
+                ?? throw new HotelRoomNotFoundException();
+            
+            if (bookingDetails.Guests > room.MaxGuests)
+            {
+                throw new HotelRoomGuestsExceededException();
+            }
+            
+            // correction for dates containing time
+            bookingDetails.Range.Start = bookingDetails.Range.Start.Date;
+            bookingDetails.Range.End = bookingDetails.Range.End.Date;
+
+            if (!IsRoomAvailable(room, bookingDetails.Range))
+            {
+                throw new HotelRoomUnavailableException();
+            }
+
+            room.Reservations.Add(new HotelRoomReservation
+            {
+                UserId = bookingDetails.UserId,
+                StartTime = bookingDetails.Range.Start,
+                EndTime = bookingDetails.Range.End,
+                GuestsCount = bookingDetails.Guests
+            });
+            _dbContext.SaveChanges();
+        }
+
+        private bool IsRoomAvailable(HotelRoom room, TimeRange range)
+        {
+            return room.Reservations.All(res => res.EndTime <= range.Start || res.StartTime >= range.End);
         }
     }
 }

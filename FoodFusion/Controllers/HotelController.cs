@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Services.Authorization.Exceptions;
 using Services.Hotel;
 using Services.Hotel.Models;
+using System.Security.Claims;
 
 namespace WebApi.Controllers
 {
@@ -15,7 +18,7 @@ namespace WebApi.Controllers
             _hotelService = hotelService;
         }
 
-        [HttpGet("features")]
+        [HttpGet("Features")]
         public IActionResult GetFeatures()
         {
             var features = _hotelService.GetAvailableFeatures();
@@ -23,12 +26,26 @@ namespace WebApi.Controllers
             return Ok(features);
         }
 
-        [HttpPost("rooms")]
+        [HttpPost("Rooms")]
         public IActionResult GetRooms(HotelRoomsFiltersModel filters)
         {
             var rooms = _hotelService.GetRooms(filters);
 
             return Ok(rooms);
+        }
+
+        [Authorize]
+        [HttpPost("Reservations")]
+        public IActionResult BookRoom(HotelRoomBookingModel bookingDetails)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) throw new InvalidClaimException();
+
+            bookingDetails.UserId = userId;
+
+            _hotelService.BookRoom(bookingDetails);
+
+            return Ok();
         }
     }
 }

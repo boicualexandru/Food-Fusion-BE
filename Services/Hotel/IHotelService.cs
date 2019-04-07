@@ -11,5 +11,7 @@ namespace Services.Hotel
         IList<HotelRoomModel> GetRooms(HotelRoomsFiltersModel filters = null);
 
         IList<HotelFeatureModel> GetAvailableFeatures();
+
+        void BookRoom(HotelRoomBookingModel bookingDetails);
     }
 }
