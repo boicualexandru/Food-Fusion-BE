@@ -22,6 +22,9 @@ namespace DataAccess.Models
 
         [Required]
         public int MaxGuests { get; set; }
+        
+        [MaxLength(400)]
+        public string ImageUrl { get; set; }
 
 
         public virtual ICollection<HotelRoomFeature> RoomFeatures { get; set; }

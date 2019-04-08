@@ -14,6 +14,8 @@ namespace Services.Hotel.Models
         
         public int MaxGuests { get; set; }
 
+        public string ImageUrl { get; set; }
+
         public IList<HotelFeatureModel> Features { get; set; }
     }
 }
