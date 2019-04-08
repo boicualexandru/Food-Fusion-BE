@@ -26,6 +26,8 @@ namespace DataAccess.Models
         [MaxLength(400)]
         public string ImageUrl { get; set; }
 
+        public decimal Price { get; set; }
+
 
         public virtual ICollection<HotelRoomFeature> RoomFeatures { get; set; }
         public virtual ICollection<HotelRoomReservation> Reservations { get; set; }

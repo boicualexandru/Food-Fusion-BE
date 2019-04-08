@@ -16,6 +16,8 @@ namespace Services.Hotel.Models
 
         public string ImageUrl { get; set; }
 
+        public decimal Price { get; set; }
+
         public IList<HotelFeatureModel> Features { get; set; }
     }
 }
