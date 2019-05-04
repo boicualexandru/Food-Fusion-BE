@@ -67,6 +67,17 @@ namespace Services.Reservations
                 }
             }
 
+            var midnight = timeRange.Start.Date;
+            while(midnight < timeRange.End)
+            {
+                unavailableTimeRanges.Add(new TimeRange
+                {
+                    Start = midnight,
+                    End = midnight + TimeSpan.FromHours(7)
+                });
+                midnight += TimeSpan.FromDays(1);
+            }
+
             return unavailableTimeRanges;
         }
 
