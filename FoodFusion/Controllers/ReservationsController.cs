@@ -155,9 +155,8 @@ namespace WebApi.Controllers
             }
         }
 
-        // PUT: api/Reservations/5
-        // Not secure. Must be modified only by owner or admin
-        [Authorize]
+        // PUT: api/PayReservation/5
+        [AuthorizeByReservation(roles: "Employee, Owner")]
         [HttpPut("PayReservation/{id}")]
         public IActionResult MarkReservationAsPaid(int id)
         {

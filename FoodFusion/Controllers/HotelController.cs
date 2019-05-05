@@ -67,8 +67,9 @@ namespace WebApi.Controllers
             return Ok(reservations);
         }
 
-        // PUT: api/Reservations/5
-        [AuthorizeByHotelReservation(roles: "Owner")]
+        // PUT: api/Hotel/PayReservation/5
+        // Not secure. Must be modified only by owner or admin
+        [Authorize]
         [HttpPut("PayReservation/{id}")]
         public IActionResult MarkReservationAsPaid(int id)
         {
