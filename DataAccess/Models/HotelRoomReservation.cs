@@ -16,6 +16,8 @@ namespace DataAccess.Models
 
         public int GuestsCount { get; set; }
 
+        public bool Paid { get; set; }
+
         public DateTime StartTime { get; set; }
 
         public DateTime EndTime { get; set; }

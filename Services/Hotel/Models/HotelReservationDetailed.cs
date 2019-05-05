@@ -16,6 +16,8 @@ namespace Services.Hotel.Models
 
         public int GuestsCount { get; set; }
 
+        public bool Paid { get; set; }
+
         public TimeRange Range { get; set; }
     }
 }

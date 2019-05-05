@@ -16,7 +16,9 @@ namespace DataAccess.Models
         public int RestaurantId { get; set; }
         
         public int ParticipantsCount { get; set; }
-        
+
+        public bool Paid { get; set; }
+
         public DateTime StartTime { get; set; }
         
         public DateTime EndTime { get; set; }
