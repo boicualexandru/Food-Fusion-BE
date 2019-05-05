@@ -66,5 +66,15 @@ namespace WebApi.Controllers
             var reservations = _hotelService.GetReservations(userId);
             return Ok(reservations);
         }
+
+        // PUT: api/Reservations/5
+        [AuthorizeByHotelReservation(roles: "Owner")]
+        [HttpPut("PayReservation/{id}")]
+        public IActionResult MarkReservationAsPaid(int id)
+        {
+            _hotelService.MarkReservationAsPaid(id);
+
+            return Ok();
+        }
     }
 }

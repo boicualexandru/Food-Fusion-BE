@@ -119,5 +119,14 @@ namespace Services.Hotel
             var reservationList = reservations.ToList();
             return _mapper.Map<IList<HotelReservationDetailedModel>>(reservationList);
         }
+
+        public void MarkReservationAsPaid(int reservarionId)
+        {
+            var reservation = _dbContext.HotelRoomReservations
+                .FirstOrDefault(r => r.Id == reservarionId);
+
+            reservation.Paid = true;
+            _dbContext.SaveChanges();
+        }
     }
 }

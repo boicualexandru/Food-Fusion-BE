@@ -15,5 +15,7 @@ namespace Services.Hotel
         void BookRoom(HotelRoomBookingModel bookingDetails);
 
         IList<HotelReservationDetailedModel> GetReservations(int? userId = null);
+
+        void MarkReservationAsPaid(int reservarionId);
     }
 }
