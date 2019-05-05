@@ -75,6 +75,11 @@ namespace Services.Reservations
                     Start = midnight,
                     End = midnight + TimeSpan.FromHours(7)
                 });
+                unavailableTimeRanges.Add(new TimeRange
+                {
+                    Start = midnight + TimeSpan.FromHours(22),
+                    End = midnight + TimeSpan.FromHours(24)
+                });
                 midnight += TimeSpan.FromDays(1);
             }
 
