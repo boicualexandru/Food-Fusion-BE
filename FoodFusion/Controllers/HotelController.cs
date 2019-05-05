@@ -47,5 +47,24 @@ namespace WebApi.Controllers
 
             return Ok();
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("Reservations")]
+        public IActionResult GetAllReservations()
+        {
+            var reservations = _hotelService.GetReservations();
+            return Ok(reservations);
+        }
+
+        [Authorize]
+        [HttpGet("UserReservations")]
+        public IActionResult GetUserReservations()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId)) throw new InvalidClaimException();
+
+            var reservations = _hotelService.GetReservations(userId);
+            return Ok(reservations);
+        }
     }
 }

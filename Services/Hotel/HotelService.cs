@@ -103,5 +103,21 @@ namespace Services.Hotel
         {
             return room.Reservations.All(res => res.EndTime <= range.Start || res.StartTime >= range.End);
         }
+
+        public IList<HotelReservationDetailedModel> GetReservations(int? userId = null)
+        {
+            var reservations = _dbContext.HotelRoomReservations
+                .Include(r => r.Room)
+                .Include(r => r.User)
+                .AsQueryable();
+
+            if (userId.HasValue)
+            {
+                reservations = reservations.Where(r => r.UserId == userId);
+            }
+
+            var reservationList = reservations.ToList();
+            return _mapper.Map<IList<HotelReservationDetailedModel>>(reservationList);
+        }
     }
 }

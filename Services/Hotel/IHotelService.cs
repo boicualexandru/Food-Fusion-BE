@@ -13,5 +13,7 @@ namespace Services.Hotel
         IList<HotelFeatureModel> GetAvailableFeatures();
 
         void BookRoom(HotelRoomBookingModel bookingDetails);
+
+        IList<HotelReservationDetailedModel> GetReservations(int? userId = null);
     }
 }

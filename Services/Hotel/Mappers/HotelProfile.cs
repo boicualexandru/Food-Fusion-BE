@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common;
 using DataAccess.Models;
 using Services.Hotel.Models;
 using System.Linq;
@@ -18,6 +19,17 @@ namespace Services.Hotel.Mappers
             CreateMap<HotelFeature, HotelFeatureModel>();
             CreateMap<HotelFeatureModel, HotelFeature>()
                 .ForMember(hotelFeature => hotelFeature.Id, opt => opt.Ignore());
+
+
+            CreateMap<HotelRoomReservation, HotelReservationDetailedModel>()
+                .ForMember(rd => rd.Range, opt => opt
+                    .MapFrom(r => new TimeRange
+                    {
+                        Start = r.StartTime,
+                        End = r.EndTime
+                    }));
+            CreateMap<HotelReservationDetailedModel, HotelRoomReservation>()
+                .ForMember(reservation => reservation.Id, opt => opt.Ignore());
         }
     }
 }
