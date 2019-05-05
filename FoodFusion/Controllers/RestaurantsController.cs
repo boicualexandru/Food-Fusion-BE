@@ -55,7 +55,7 @@ namespace WebApi.Controllers
         }
 
         // POST: api/Restaurants
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost]
         public IActionResult Post([FromBody] RestaurantModel restaurant)
         {
