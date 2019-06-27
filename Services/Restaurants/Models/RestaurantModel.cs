@@ -17,8 +17,8 @@ namespace Services.Restaurants.Models
 
         public string City { get; set; }
 
-        public long GeoLatitude { get; set; }
+        public double GeoLatitude { get; set; }
 
-        public long GeoLongitude { get; set; }
+        public double GeoLongitude { get; set; }
     }
 }

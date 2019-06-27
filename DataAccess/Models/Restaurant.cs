@@ -26,9 +26,9 @@ namespace DataAccess.Models
         [MaxLength(200)]
         public string City { get; set; }
 
-        public long GeoLatitude { get; set; }
+        public double GeoLatitude { get; set; }
 
-        public long GeoLongitude { get; set; }
+        public double GeoLongitude { get; set; }
 
         public int? ManagerId { get; set; }
 
