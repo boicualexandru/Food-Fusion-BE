@@ -199,5 +199,14 @@ namespace Services.Reservations
 
             return mostFittingTable.Id;
         }
+
+        public void MarkReservationAsPaid(int reservationId)
+        {
+            var reservation = _dbContext.Reservations
+                .FirstOrDefault(r => r.Id == reservationId) ?? throw new ReservationNotFoundException();
+
+            reservation.Paid = true;
+            _dbContext.SaveChanges();
+        }
     }
 }

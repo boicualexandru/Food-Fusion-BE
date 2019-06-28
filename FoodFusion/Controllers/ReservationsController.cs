@@ -154,5 +154,22 @@ namespace WebApi.Controllers
                 return NotFound();
             }
         }
+
+        // PUT: api/PayReservation/5
+        [AuthorizeByReservation(roles: "Employee, Owner")]
+        [HttpPut("PayReservation/{id}")]
+        public IActionResult MarkReservationAsPaid(int id)
+        {
+            try
+            {
+                _reservationsService.MarkReservationAsPaid(id);
+
+                return Ok();
+            }
+            catch (ReservationNotFoundException)
+            {
+                return NotFound();
+            }
+        }
     }
 }

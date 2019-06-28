@@ -22,6 +22,11 @@ namespace DataAccess.Models
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<ReservedTable> ReservedTables { get; set; }
 
+        public DbSet<HotelRoom> HotelRooms { get; set; }
+        public DbSet<HotelFeature> HotelFeatures { get; set; }
+        public DbSet<HotelRoomFeature> HotelRoomFeatures { get; set; }
+        public DbSet<HotelRoomReservation> HotelRoomReservations { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

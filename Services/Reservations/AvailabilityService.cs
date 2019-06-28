@@ -36,6 +36,19 @@ namespace Services.Reservations
                 .FirstOrDefault(r => r.Id == restaurantId);
             restaurant = restaurant ?? throw new RestaurantNotFoundException();
 
+            // TODO: Remove theses lines because the new restaurants should already have a default map assigned at creation time
+            if(restaurant.Map == null)
+            {
+                var newRestaurantMap = new RestaurantMap
+                {
+                    RestaurantId = restaurant.Id
+                };
+                _dbContext.RestaurantMaps.Add(newRestaurantMap);
+                _dbContext.SaveChanges();
+
+                restaurant.Map = newRestaurantMap;
+            }
+
             var tables = _mapper.Map<List<TableModel>>(restaurant.Map.Tables);
             if (!DoesParticipantsFitToTables(tables, participantsCount))
             {
@@ -65,6 +78,22 @@ namespace Services.Reservations
                 {
                     unavailableTimeRanges.Add(tablesAvailability.Range);
                 }
+            }
+
+            var midnight = timeRange.Start.Date;
+            while(midnight < timeRange.End)
+            {
+                unavailableTimeRanges.Add(new TimeRange
+                {
+                    Start = midnight,
+                    End = midnight + TimeSpan.FromHours(7)
+                });
+                unavailableTimeRanges.Add(new TimeRange
+                {
+                    Start = midnight + TimeSpan.FromHours(22),
+                    End = midnight + TimeSpan.FromHours(24)
+                });
+                midnight += TimeSpan.FromDays(1);
             }
 
             return unavailableTimeRanges;
@@ -139,6 +168,11 @@ namespace Services.Reservations
 
         private bool DoesParticipantsFitToTables(List<TableModel> tables, int participantsCount, bool canSplit = true)
         {
+            if(tables == null)
+            {
+                return false;
+            }
+
             if (canSplit)
             {
                 var availableSeatsCount = tables.Select(t => t.Seats).Sum();

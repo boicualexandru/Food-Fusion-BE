@@ -4,14 +4,16 @@ using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(FoodFusionContext))]
-    partial class FoodFusionContextModelSnapshot : ModelSnapshot
+    [Migration("20190623171907_Restaurant_Image_GeoLocation_Columns")]
+    partial class Restaurant_Image_GeoLocation_Columns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,9 +214,9 @@ namespace DataAccess.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500);
 
-                    b.Property<double>("GeoLatitude");
+                    b.Property<long>("GeoLatitude");
 
-                    b.Property<double>("GeoLongitude");
+                    b.Property<long>("GeoLongitude");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(300);

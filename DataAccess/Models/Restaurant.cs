@@ -20,9 +20,16 @@ namespace DataAccess.Models
         [MaxLength(200)]
         public string Contact { get; set; }
 
+        [MaxLength(300)]
+        public string ImageUrl { get; set; }
+
         [MaxLength(200)]
         public string City { get; set; }
-        
+
+        public double GeoLatitude { get; set; }
+
+        public double GeoLongitude { get; set; }
+
         public int? ManagerId { get; set; }
 
 

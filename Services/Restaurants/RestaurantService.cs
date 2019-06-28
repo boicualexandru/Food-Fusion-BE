@@ -26,6 +26,7 @@ namespace Services.Restaurants
 
             restaurant.ManagerId = managerUserId;
             restaurant.Menu = new Menu();
+            restaurant.Map = new RestaurantMap();
 
             _dbContext.Restaurants.Add(restaurant);
             _dbContext.SaveChanges();

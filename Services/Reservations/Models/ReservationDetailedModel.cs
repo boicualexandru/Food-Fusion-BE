@@ -16,6 +16,8 @@ namespace Services.Reservations.Models
 
         public int ParticipantsCount { get; set; }
 
+        public bool Paid { get; set; }
+
         public TimeRange Range { get; set; }
 
         public List<TableModel> Tables { get; set; }

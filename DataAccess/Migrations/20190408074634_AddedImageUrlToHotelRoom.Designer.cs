@@ -4,19 +4,21 @@ using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(FoodFusionContext))]
-    partial class FoodFusionContextModelSnapshot : ModelSnapshot
+    [Migration("20190408074634_AddedImageUrlToHotelRoom")]
+    partial class AddedImageUrlToHotelRoom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -61,8 +63,6 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasMaxLength(200);
 
-                    b.Property<decimal>("Price");
-
                     b.HasKey("Id");
 
                     b.ToTable("HotelRooms");
@@ -97,9 +97,9 @@ namespace DataAccess.Migrations
 
                     b.Property<int>("GuestsCount");
 
-                    b.Property<int>("HotelRoomId");
+                    b.Property<int?>("HotelRoomId");
 
-                    b.Property<bool>("Paid");
+                    b.Property<int>("RoomId");
 
                     b.Property<DateTime>("StartTime");
 
@@ -108,8 +108,6 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("HotelRoomId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("HotelRoomReservations");
                 });
@@ -158,8 +156,6 @@ namespace DataAccess.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("EndTime");
-
-                    b.Property<bool>("Paid");
 
                     b.Property<int>("ParticipantsCount");
 
@@ -211,13 +207,6 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Description")
                         .HasMaxLength(500);
-
-                    b.Property<double>("GeoLatitude");
-
-                    b.Property<double>("GeoLongitude");
-
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(300);
 
                     b.Property<int?>("ManagerId");
 
@@ -328,15 +317,9 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Models.HotelRoomReservation", b =>
                 {
-                    b.HasOne("DataAccess.Models.HotelRoom", "Room")
+                    b.HasOne("DataAccess.Models.HotelRoom")
                         .WithMany("Reservations")
-                        .HasForeignKey("HotelRoomId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DataAccess.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("HotelRoomId");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Menu", b =>

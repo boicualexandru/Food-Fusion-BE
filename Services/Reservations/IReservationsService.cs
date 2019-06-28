@@ -13,6 +13,7 @@ namespace Services.Reservations
         // but it might be he same as returned type
         ReservationDetailedModel AddReservation(ReservationRequestModel reservation);
         ReservationDetailedModel UpdateReservation(ReservationRequestModel reservation);
+        void MarkReservationAsPaid(int reservationId);
         void RemoveReservation(int reservationId);
     }
 }

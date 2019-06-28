@@ -25,6 +25,7 @@ using Services.Authentication;
 using Services.Authentication.Models;
 using Services.Authorization;
 using Services.Employees;
+using Services.Hotel;
 using Services.Menus;
 using Services.Reservations;
 using Services.Restaurants;
@@ -118,6 +119,8 @@ namespace FoodFusion
             services.AddTransient<IReservationsService, ReservationsService>();
             services.AddTransient<IAvailabilityService, AvailabilityService>();
             services.AddTransient(typeof(IConcurrentEventsService<>), typeof(ConcurrentEventsService<>));
+
+            services.AddTransient<IHotelService, HotelService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
