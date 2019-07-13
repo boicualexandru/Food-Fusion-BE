@@ -22,5 +22,6 @@ COPY --from=publish /app .
 EXPOSE 5000/tcp
 ENV ASPNETCORE_URLS http://*:5000
 ENV ASPNETCORE_ENVIRONMENT docker
+ENV ConnectionStrings__FoodFusionDB docker
 
 ENTRYPOINT ["dotnet", "WebApi.dll"]
