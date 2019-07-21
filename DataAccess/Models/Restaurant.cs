@@ -30,6 +30,8 @@ namespace DataAccess.Models
 
         public double GeoLongitude { get; set; }
 
+        public PriceRange? PriceRange { get; set; }
+
         public int? ManagerId { get; set; }
 
 
@@ -38,5 +40,6 @@ namespace DataAccess.Models
         public virtual RestaurantMap Map { get; set; }
         public virtual ICollection<RestaurantEmployee> RestaurantEmployees { get; set; }
         public virtual ICollection<Reservation> Reservations { get; set; }
+        public virtual ICollection<RestaurantCuisine> RestaurantCuisines { get; set; }
     }
 }

@@ -17,10 +17,12 @@ namespace DataAccess.Models
         public DbSet<RestaurantMap> RestaurantMaps { get; set; }
         public DbSet<RestaurantTable> RestaurantTables { get; set; }
         public DbSet<RestaurantEmployee> RestaurantEmployees { get; set; }
+        public DbSet<RestaurantCuisine> RestaurantCuisines { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<ReservedTable> ReservedTables { get; set; }
+        public DbSet<Cuisine> Cuisine { get; set; }
 
         public DbSet<HotelRoom> HotelRooms { get; set; }
         public DbSet<HotelFeature> HotelFeatures { get; set; }
