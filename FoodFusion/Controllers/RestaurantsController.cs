@@ -57,7 +57,7 @@ namespace WebApi.Controllers
         // POST: api/Restaurants
         [Authorize]
         [HttpPost]
-        public IActionResult Post([FromBody] RestaurantModel restaurant)
+        public IActionResult Post([FromBody] RestaurantInsertModel restaurant)
         {
             if (!ModelState.IsValid)
             {

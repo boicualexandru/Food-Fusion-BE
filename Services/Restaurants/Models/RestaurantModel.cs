@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DataAccess.Models;
+using Services.Cuisines.Models;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Services.Restaurants.Models
 {
@@ -20,5 +23,9 @@ namespace Services.Restaurants.Models
         public double GeoLatitude { get; set; }
 
         public double GeoLongitude { get; set; }
+
+        public PriceRange? PriceRange { get; set; }
+
+        public List<CuisineModel> Cuisines { get; set; }
     }
 }

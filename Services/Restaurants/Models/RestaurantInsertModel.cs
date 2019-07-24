@@ -1,20 +1,17 @@
 ﻿using DataAccess.Models;
 using Services.Cuisines.Models;
-using Services.Menus.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Services.Restaurants.Models
 {
-    public class RestaurantDetailedModel
+    public class RestaurantInsertModel
     {
-        public int Id { get; set; }
-
         [Required]
         public string Name { get; set; }
-
+        
         public string Description { get; set; }
-
+        
         public string Contact { get; set; }
 
         public string ImageUrl { get; set; }
@@ -27,8 +24,6 @@ namespace Services.Restaurants.Models
 
         public PriceRange? PriceRange { get; set; }
 
-        public MenuModel Menu { get; set; }
-
-        public List<CuisineModel> Cuisines { get; set; }
+        public List<int> CuisineIds { get; set; }
     }
 }

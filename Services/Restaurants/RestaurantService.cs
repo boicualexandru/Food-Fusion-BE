@@ -20,9 +20,9 @@ namespace Services.Restaurants
             _mapper = mapper;
         }
 
-        public RestaurantModel AddRestaurant(RestaurantModel restaurantModel, int managerUserId)
+        public RestaurantModel AddRestaurant(RestaurantInsertModel restaurantInsertModel, int managerUserId)
         {
-            var restaurant = _mapper.Map<Restaurant>(restaurantModel);
+            var restaurant = _mapper.Map<Restaurant>(restaurantInsertModel);
 
             restaurant.ManagerId = managerUserId;
             restaurant.Menu = new Menu();
