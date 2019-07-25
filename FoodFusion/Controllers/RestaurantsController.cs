@@ -68,9 +68,9 @@ namespace WebApi.Controllers
             var userIdClaim = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userId = int.Parse(userIdClaim);
 
-            var createdRestaurant = _restaurantService.AddRestaurant(restaurant, userId);
+            var restaurantId = _restaurantService.AddRestaurant(restaurant, userId);
 
-            return Ok(createdRestaurant);
+            return Ok(restaurantId);
         }
 
         // PUT: api/Restaurants/5

@@ -20,7 +20,7 @@ namespace Services.Restaurants
             _mapper = mapper;
         }
 
-        public RestaurantModel AddRestaurant(RestaurantInsertModel restaurantInsertModel, int managerUserId)
+        public int AddRestaurant(RestaurantInsertModel restaurantInsertModel, int managerUserId)
         {
             var restaurant = _mapper.Map<Restaurant>(restaurantInsertModel);
 
@@ -31,7 +31,7 @@ namespace Services.Restaurants
             _dbContext.Restaurants.Add(restaurant);
             _dbContext.SaveChanges();
 
-            return _mapper.Map<RestaurantModel>(restaurant);
+            return restaurant.Id;
         }
 
         public RestaurantDetailedModel GetRestaurant(int id)
