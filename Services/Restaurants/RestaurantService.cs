@@ -40,6 +40,8 @@ namespace Services.Restaurants
                 .AsNoTracking()
                 .Include(r => r.Menu)
                     .ThenInclude(menu => menu.Items)
+                .Include(r => r.RestaurantCuisines)
+                    .ThenInclude(rc => rc.Cuisine)
                 .FirstOrDefault(r => r.Id == id);
             restaurant = restaurant ?? throw new RestaurantNotFoundException();
 
@@ -49,6 +51,8 @@ namespace Services.Restaurants
         public IList<RestaurantModel> GetRestaurants(string city)
         {
             var restaurantsQuery = _dbContext.Restaurants
+                .Include(r => r.RestaurantCuisines)
+                    .ThenInclude(rc => rc.Cuisine)
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(city))
