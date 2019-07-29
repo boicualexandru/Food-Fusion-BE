@@ -24,6 +24,7 @@ using Microsoft.IdentityModel.Tokens;
 using Services.Authentication;
 using Services.Authentication.Models;
 using Services.Authorization;
+using Services.Cuisines;
 using Services.Employees;
 using Services.Hotel;
 using Services.Menus;
@@ -115,6 +116,8 @@ namespace FoodFusion
             services.AddTransient<IMenuService, MenuService>();
 
             services.AddTransient<IEmployeesService, EmployeesService>();
+
+            services.AddTransient<ICuisinesService, CuisinesService>();
 
             services.AddTransient<IReservationsService, ReservationsService>();
             services.AddTransient<IAvailabilityService, AvailabilityService>();
