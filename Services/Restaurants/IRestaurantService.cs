@@ -6,7 +6,7 @@ namespace Services.Restaurants
     public interface IRestaurantService
     {
         int AddRestaurant(RestaurantInsertModel restaurantInsertModel, int managerUserId);
-        IList<RestaurantModel> GetRestaurants(string city);
+        IList<RestaurantModel> GetRestaurants(RestaurantsFilter filter);
         RestaurantDetailedModel GetRestaurant(int id);
         void UpdateRestaurant(RestaurantModel restaurant);
         void DeleteRestaurant(int id);

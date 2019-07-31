@@ -48,19 +48,31 @@ namespace Services.Restaurants
             return _mapper.Map<RestaurantDetailedModel>(restaurant);
         }
 
-        public IList<RestaurantModel> GetRestaurants(string city)
+        public IList<RestaurantModel> GetRestaurants(RestaurantsFilter filter)
         {
             var restaurantsQuery = _dbContext.Restaurants
                 .Include(r => r.RestaurantCuisines)
                     .ThenInclude(rc => rc.Cuisine)
                 .AsNoTracking();
 
-            if (!string.IsNullOrWhiteSpace(city))
+            if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
                 restaurantsQuery = restaurantsQuery
-                    .Where(r => string.Equals(r.City, city.Trim(), StringComparison.OrdinalIgnoreCase));
+                    .Where(r => r.Name.Contains(filter.SearchText, StringComparison.InvariantCultureIgnoreCase));
             }
-            
+
+            if (filter.CuisineIds?.Any() == true)
+            {
+                restaurantsQuery = restaurantsQuery
+                    .Where(r => r.RestaurantCuisines.Any(rc => filter.CuisineIds.Contains(rc.CuisineId)));
+            }
+
+            if (filter.PriceRanges?.Any() == true)
+            {
+                restaurantsQuery = restaurantsQuery
+                    .Where(r => r.PriceRange.HasValue && filter.PriceRanges.Contains(r.PriceRange.Value));
+            }
+
             var restaurants = restaurantsQuery.ToList();
 
             return _mapper.Map<IList<RestaurantModel>>(restaurants);

@@ -32,9 +32,9 @@ namespace WebApi.Controllers
         /// <returns>List of restaurants</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IList<RestaurantModel>), StatusCodes.Status200OK)]
-        public IActionResult Get(string city)
+        public IActionResult Get([FromQuery]RestaurantsFilter filter)
         {
-            var restaurants = _restaurantService.GetRestaurants(city);
+            var restaurants = _restaurantService.GetRestaurants(filter);
 
             return Ok(restaurants);
         }
