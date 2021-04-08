@@ -42,6 +42,9 @@ namespace Services.Reservations.Mappers
                     {
                         RestaurantTableId = tId
                     })));
+
+            CreateMap<TableModel, RestaurantTable>();
+            CreateMap<RestaurantTable, TableModel>();
         }
     }
 }
